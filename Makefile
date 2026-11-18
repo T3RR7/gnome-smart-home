@@ -21,7 +21,7 @@ help:
 		'  make dev           Open an isolated GNOME Devkit preview' \
 		'  make check         Validate code, schemas and translations, then run tests' \
 		'  make lint          Build and analyze the release ZIP with Shexli' \
-		'  make release       Bump, commit, and tag a release (BUMP=patch, minor, or major)' \
+		'  make release       Bump, commit, tag, and push a release (BUMP=patch, minor, or major)' \
 		'  make test          Run the unit tests and local Home Assistant API tests' \
 		'  make test-ui       Run the headless GNOME Shell and GTK tests' \
 		'  make test-preview  Check the demo launcher and preferences integration' \
@@ -53,13 +53,8 @@ lint: build
 
 release: export RELEASE_BUMP = $(BUMP)
 release:
-	@case "$$RELEASE_BUMP" in \
-		patch|minor|major) \
-			git_dir=$$(git rev-parse --path-format=absolute --git-common-dir) && \
-			flock "$$git_dir/gnome-smart-home-release.lock" npm version "$$RELEASE_BUMP" \
-				--force=false --git-tag-version --ignore-scripts=false --tag-version-prefix=v --message 'Release %s' ;; \
-		*) printf '%s\n' 'Set BUMP to patch, minor, or major.' >&2; exit 1 ;; \
-	esac
+	@git_dir=$$(git rev-parse --path-format=absolute --git-common-dir) && \
+		flock "$$git_dir/gnome-smart-home-release.lock" node scripts/release-version.js release "$$RELEASE_BUMP"
 
 test:
 	bash scripts/test.sh
