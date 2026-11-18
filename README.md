@@ -2,6 +2,38 @@
 
 Control your Home Assistant devices from the **Smart Home** tile in GNOME Quick Settings. Choose which entities appear, give them custom names or symbolic icons, and arrange them in the order you want. The extension uses GNOME Shell widgets and a GTK 4/libadwaita preferences window. The interface is available in English and Russian.
 
+## Screenshots
+
+Captured on GNOME Shell 50 with demo Home Assistant entities.
+
+| Lights, switches, and fans | Covers, thermostats, and scenes |
+| --- | --- |
+| ![Smart Home tile and menu with light brightness, white temperature, color presets, and fan speed](docs/screenshots/quick-settings.png) | ![Smart Home menu with blind position, thermostat setpoint, sensor reading, and scene activation](docs/screenshots/climate-and-covers.png) |
+
+<details>
+<summary>Custom light color</summary>
+
+![Color picker with a color field, hue slider, and hexadecimal input](docs/screenshots/light-color-picker.png)
+
+</details>
+
+<details>
+<summary>Connection, panel, and device preferences</summary>
+
+**Connection and panel settings**
+
+![Home Assistant connection status and Quick Settings appearance controls](docs/screenshots/preferences-connection.png)
+
+**Favorites and device discovery**
+
+![Device favorites with reorder arrows, custom name and icon fields, and device search](docs/screenshots/preferences-devices.png)
+
+**Symbolic icon chooser**
+
+![GNOME symbolic icon presets, icon name field, and monochrome SVG import](docs/screenshots/preferences-icons.png)
+
+</details>
+
 ## Compatibility
 
 The extension supports **GNOME Shell 50 on Wayland** and was tested on GNOME Shell 50.6. Home Assistant must be reachable from your desktop and expose the entities you want to control.
