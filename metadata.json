@@ -4,7 +4,12 @@
   "description": "Control your Home Assistant devices from GNOME Quick Settings.",
   "url": "https://github.com/T3RR7/gnome-smart-home",
   "shell-version": [
-    "50"
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51"
   ],
   "version-name": "0.3.4",
   "settings-schema": "org.gnome.shell.extensions.gnome-smart-home",

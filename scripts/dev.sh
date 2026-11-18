@@ -43,8 +43,9 @@ if [[ $mode == --headless ]]; then
     shell_args=(--wrap wayland-shell)
     log=tests/artifacts/preview-smoke.log
 fi
-gnome-keyring-daemon --foreground --unlock --components=secrets --control-directory="$GNOME_KEYRING_CONTROL" <<< 'gnome-smart-home-disposable-preview-keyring' &
+bash scripts/test-keyring.sh "$GNOME_KEYRING_CONTROL" &
 keyring_pid=$!
+gdbus wait --session --timeout 10 org.freedesktop.secrets
 bash scripts/build.sh
 
 export LIBGL_ALWAYS_SOFTWARE=1

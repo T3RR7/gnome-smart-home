@@ -36,7 +36,7 @@ Captured on GNOME Shell 50 with demo Home Assistant entities.
 
 ## Compatibility
 
-The extension supports **GNOME Shell 50 on Wayland**. Your desktop needs access to your Home Assistant server and a keyring such as GNOME Keyring to store the access token.
+The extension supports **GNOME Shell 46–51 on Wayland**. Your desktop needs access to your Home Assistant server and a Secret Service provider such as GNOME Keyring or oo7 to store the access token.
 
 ## Install
 

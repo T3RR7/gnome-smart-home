@@ -1,4 +1,5 @@
 # GNOME Extensions analyzer for release checks.
-shexli==0.2.1
+# The PyPI release caps stable versions at GNOME 50. This upstream revision uses the release calendar.
+shexli @ https://codeload.github.com/GNOME/extensions-web/tar.gz/09e0f66881d6dabb26bcfdd3db64365647cbd727#sha256=1148f64f4a934040749b75adca0d346ea8e20bb884d93bdc8a1dc69fe2b8b6e5&subdirectory=shexli
 tree-sitter==0.26.1
 tree-sitter-javascript==0.25.0

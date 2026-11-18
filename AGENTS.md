@@ -2,7 +2,7 @@
 
 ## Project
 
-Gnome Smart Home is a GJS extension for GNOME Shell 50 on Wayland. It controls selected Home Assistant entities from Quick Settings. The [README](README.md) covers installation, configuration, and supported devices.
+Gnome Smart Home is a GJS extension for GNOME Shell 46–51 on Wayland. It controls selected Home Assistant entities from Quick Settings. The [README](README.md) covers installation, configuration, and supported devices.
 
 ## Where to make changes
 
@@ -25,8 +25,8 @@ Gnome Smart Home is a GJS extension for GNOME Shell 50 on Wayland. It controls s
 
 - Run `make check` for JavaScript, schema and translation validation, unit tests, and local Home Assistant API tests.
 - Install the development dependencies in a Python 3.12 or newer virtual environment with `python -m pip install -r requirements-lint.txt`. Run `make lint` there to build and analyze the release ZIP with [Shexli](https://gitlab.gnome.org/Infrastructure/extensions-web/-/tree/master/shexli). To select the interpreter directly, use `make lint PYTHON=/path/to/venv/bin/python`.
-- Use `make test-ui` for Shell or GTK changes and `make test-preview` for demo launch or preference synchronization changes.
-- Use `make dev` for manual UI checks in the isolated Devkit. Restart the preview to load code changes. Use `make build` to package the ZIP and `make install` when installing into the current user's GNOME profile.
+- Use `make test-ui` for Shell or GTK changes. It runs headlessly with GNOME Keyring or oo7 in an isolated profile. Test the relevant Shell versions when changing compatibility.
+- Use `make dev` for manual UI checks in the isolated Devkit and `make test-preview` for demo launch or preference synchronization changes. These targets use the GNOME Shell 50 or later developer tools. Restart the preview to load code changes. Use `make build` to package the ZIP and `make install` when installing into the current user's GNOME profile.
 - For documentation edits, verify links and commands against the repository. In your handoff, report the checks you ran and any verification gaps.
 
 ## Release to GNOME Extensions

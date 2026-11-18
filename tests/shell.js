@@ -23,9 +23,9 @@ function pause(milliseconds) {
     }));
 }
 
-async function clickAt(pointer, x, y) {
+async function clickAt(pointer, seat, x, y) {
     pointer.notify_absolute_motion(GLib.get_monotonic_time(), x, y);
-    global.stage.context.get_backend().get_default_seat().warp_pointer(Math.round(x), Math.round(y));
+    seat.warp_pointer(Math.round(x), Math.round(y));
     await pause(30);
     pointer.notify_button(GLib.get_monotonic_time(), Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
     await pause(30);
@@ -76,7 +76,11 @@ export async function run() {
             try { process.wait_check_finish(result); resolve(); } catch (error) { reject(error); }
         });
     });
-    const extension = Main.extensionManager.lookup('gnome-smart-home@local');
+    // Shell startup can finish loading extensions after the first idle frame.
+    const lookup = () => Main.extensionManager.lookup('gnome-smart-home@local');
+    await waitUntil(() => lookup()?.stateObj?._toggle || lookup()?.error,
+        'Smart Home tile to initialize');
+    const extension = lookup();
     assert(extension && !extension.error, `Extension load failed: ${extension?.error}`);
     const instance = extension.stateObj;
     assert(instance?._toggle, 'Quick Settings tile created');
@@ -139,10 +143,13 @@ export async function run() {
         fixture.serviceDelayMs = 0;
         print('PASS delayed device command keeps switch state and stable row layout');
 
-        const pointer = global.stage.context.get_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
-        const handle = lamp._toggle._switch._handle;
-        const [x, y] = handle.get_transformed_position();
-        const [width, height] = handle.get_transformed_size();
+        // GNOME Shell 46 exposes the backend through Clutter instead of the stage context.
+        const backend = global.stage.context?.get_backend() ?? Clutter.get_default_backend();
+        const seat = backend.get_default_seat();
+        const pointer = seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+        const switchActor = lamp._toggle._switch;
+        const [x, y] = switchActor.get_transformed_position();
+        const [width, height] = switchActor.get_transformed_size();
         if (GLib.getenv('GSH_CAPTURE_TEST_UI') === '1') {
             const artifactRoot = Gio.File.new_for_uri(import.meta.url).get_parent().get_child('artifacts');
             GLib.mkdir_with_parents(artifactRoot.get_path(), 0o755);
@@ -159,8 +166,8 @@ export async function run() {
             stream.close(null);
         }
         const callsBeforeClick = fixture.calls.length;
-        await clickAt(pointer, x + width / 2, y + height / 2);
-        await waitUntil(() => fixture.calls.length > callsBeforeClick && !lamp._pending, 'pointer click on the native switch handle');
+        await clickAt(pointer, seat, x + width / 2, y + height / 2);
+        await waitUntil(() => fixture.calls.length > callsBeforeClick && !lamp._pending, 'pointer click on the native switch');
         assert(fixture.calls.length === callsBeforeClick + 1, 'one mouse click sends exactly one service command');
         assert(!lamp._toggle.state && fixture.states.get('light.desk').state === 'off', 'mouse click changes both native and server state');
         print('PASS real pointer click toggles the native switch once');
@@ -177,7 +184,7 @@ export async function run() {
         const beforeOpen = fixture.calls.length;
         const [arrowX, arrowY] = lamp._colorToggle.get_transformed_position();
         const [arrowWidth, arrowHeight] = lamp._colorToggle.get_transformed_size();
-        await clickAt(pointer, arrowX + arrowWidth / 2, arrowY + arrowHeight / 2);
+        await clickAt(pointer, seat, arrowX + arrowWidth / 2, arrowY + arrowHeight / 2);
         await waitUntil(() => lamp._colorRow.mapped, 'color dropdown opens from the temperature row');
         await Scripting.waitLeisure();
         assert(instance._toggle.menu.isOpen && fixture.calls.length === beforeOpen, 'opening the dropdown keeps Quick Settings open and sends no command');
@@ -192,7 +199,7 @@ export async function run() {
         assert(wheelX >= pickerX && wheelX + wheelWidth <= pickerX + pickerWidth + 1, 'wheel fits inside the dropdown');
 
         const {brightness} = fixture.states.get('light.desk').attributes;
-        await clickAt(pointer, wheelX + wheelWidth * 0.78, wheelY + wheelHeight / 2);
+        await clickAt(pointer, seat, wheelX + wheelWidth * 0.78, wheelY + wheelHeight / 2);
         await waitUntil(() => fixture.calls.length === beforeOpen + 1 && !lamp._pending, 'wheel sends one RGB command');
         const data = fixture.calls.at(-1).service_data;
         const [red, green, blue] = data.rgb_color;
