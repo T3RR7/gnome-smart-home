@@ -24,6 +24,14 @@ Gnome Smart Home is a GJS extension for GNOME Shell 50 on Wayland. It controls s
 ## Verification
 
 - Run `make check` for JavaScript, schema and translation validation, unit tests, and local Home Assistant API tests.
+- Install the development dependencies in a Python 3.12 or newer virtual environment with `python -m pip install -r requirements-lint.txt`. Run `make lint` there to build and analyze the release ZIP with [Shexli](https://gitlab.gnome.org/Infrastructure/extensions-web/-/tree/master/shexli). To select the interpreter directly, use `make lint PYTHON=/path/to/venv/bin/python`.
 - Use `make test-ui` for Shell or GTK changes and `make test-preview` for demo launch or preference synchronization changes.
 - Use `make dev` for manual UI checks in the isolated Devkit. Restart the preview to load code changes. Use `make build` to package the ZIP and `make install` when installing into the current user's GNOME profile.
 - For documentation edits, verify links and commands against the repository. In your handoff, report the checks you ran and any verification gaps.
+
+## Release to GNOME Extensions
+
+- With npm and `flock` installed and the working tree clean, run `make release` for a patch release. Use `make release BUMP=minor` or `make release BUMP=major` for other bumps. The command updates `package.json` and `metadata.json`, commits them, and creates an annotated `vMAJOR.MINOR.PATCH` tag locally.
+- Read the [review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and the [upload terms](https://extensions.gnome.org/upload/). Pushing a new release tag authorizes [Publish to GNOME Extensions](.github/workflows/publish-gnome-extensions.yml) to accept those terms and send the ZIP for review with the `EGO_USERNAME` and `EGO_PASSWORD` repository secrets. To push the release commit and tag together, use `git push --atomic origin main refs/tags/v0.3.1` with the actual tag. Regular branch pushes do not trigger this workflow.
+- The workflow runs Shexli against the same ZIP it submits. Errors stop the workflow. Review warnings before submitting. `EGO-P-007` currently flags the two color-picker files because Shell launches the GTK helper as a separate GJS process. The helper uses a fixed script path, closes on accept or cancel, and is terminated when the extension is disabled.
+- Check the GNOME Extensions account for the submitted version before retrying a timed-out upload. To submit manually, download the ZIP from the workflow's artifacts and use the [upload page](https://extensions.gnome.org/upload/).

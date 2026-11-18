@@ -94,9 +94,11 @@ export async function run() {
         const lamp = instance._controls.find(control => control.favorite.id === 'light.desk');
         assert(lamp._toggle.label.text === 'My desk', 'custom device name');
         assert(lamp._sliderRow.visible, 'brightness slider shown for capable light');
-        assert(lamp._deviceIcon.gicon.to_string().includes('lightbulb-modern-symbolic'), 'lights use the upstream GNOME light bulb');
+        await waitUntil(() => lamp._deviceIcon.gicon.to_string().includes('lightbulb-modern-symbolic'),
+            'lights use the upstream GNOME light bulb');
         const sensor = instance._controls.find(control => control.favorite.id === 'sensor.room');
-        assert(sensor._deviceIcon.gicon.to_string().includes('chip-symbolic'), 'sensors have a distinct sensor icon');
+        await waitUntil(() => sensor._deviceIcon.gicon.to_string().includes('chip-symbolic'),
+            'sensors have a distinct sensor icon');
         const cover = instance._controls.find(control => control.favorite.id === 'cover.blind');
         assert(cover._coverButtons.every(({button}) => button.visible), 'cover feature buttons');
         const climate = instance._controls.find(control => control.favorite.id === 'climate.room');
@@ -247,7 +249,8 @@ export async function run() {
         const beforeTile = grid.get_children().slice(0, grid.get_children().indexOf(instance._toggle));
         assert(!beforeTile.some(child => child.visible && child instanceof QuickSettings.QuickSettingsItem), 'tile position setting moves Smart Home to the beginning');
         settings.set_string('tile-icon', 'starred-symbolic');
-        assert(instance._toggle.gicon.to_string().includes('starred-symbolic'), 'stock symbolic tile icon is applied');
+        await waitUntil(() => instance._toggle.gicon?.to_string().includes('starred-symbolic'),
+            'stock symbolic tile icon is applied');
         settings.set_uint('tile-position', 0);
 
         settings.set_boolean('show-sliders', false);

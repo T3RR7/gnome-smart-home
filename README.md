@@ -1,6 +1,6 @@
 # Gnome Smart Home
 
-Control your Home Assistant devices from the **Smart Home** tile in GNOME Quick Settings. Choose which entities appear, give them custom names or symbolic icons, and arrange them in the order you want. The extension uses GNOME Shell widgets and a GTK 4/libadwaita preferences window. The interface is available in English and Russian.
+Control your Home Assistant devices from the **Smart Home** tile in GNOME Quick Settings. Choose which entities appear, give them custom names or symbolic icons, and arrange them in the order you want.
 
 ## Screenshots
 
@@ -36,23 +36,19 @@ Captured on GNOME Shell 50 with demo Home Assistant entities.
 
 ## Compatibility
 
-The extension supports **GNOME Shell 50 on Wayland** and was tested on GNOME Shell 50.6. Home Assistant must be reachable from your desktop and expose the entities you want to control.
-
-- **Runtime:** GJS, GTK 4, libadwaita, libsoup 3, libsecret and their GObject Introspection bindings, plus a Secret Service provider such as GNOME Keyring.
-- **Build:** GNU Make, Bash, `gnome-extensions`, `glib-compile-schemas`, and gettext's `msgfmt`.
-- **Development and tests:** Node.js for unit tests. The UI tests use `gnome-shell-test-tool` from GNOME 50, `dbus-run-session`, `gnome-keyring-daemon`, and `timeout`. The interactive preview also needs Mutter Devkit.
+The extension supports **GNOME Shell 50 on Wayland**. Your desktop needs access to your Home Assistant server and a keyring such as GNOME Keyring to store the access token.
 
 ## Install
 
-From a checkout of this repository, run:
+If you have the extension ZIP, run `gnome-extensions install <path-to-zip>`. Add `--force` when updating an existing installation.
+
+Installing from this repository requires GNU Make, Bash, `gnome-extensions`, `glib-compile-schemas`, and gettext's `msgfmt`. Run the following command from the repository directory.
 
 ```sh
 make install
 ```
 
-This builds the ZIP and installs it for the current user. On a first install, or after an update to JavaScript already loaded by GNOME Shell, log out of GNOME and back in to load the extension. Open its preferences with `make prefs` or from the **Smart Home → Settings** menu.
-
-To build an installable ZIP for another machine, run `make build`. The archive is written to `dist/gnome-smart-home@local.shell-extension.zip`. You can install it with `gnome-extensions install <path-to-zip>` and enable `gnome-smart-home@local` in the Extensions app once GNOME has loaded it.
+After a manual install or update, log out and back in to load the extension. Enable **Gnome Smart Home** in the Extensions app if needed. Open its preferences from the Extensions app or from **Smart Home → Settings** in Quick Settings.
 
 ## Connect to Home Assistant
 
@@ -63,7 +59,7 @@ To build an installable ZIP for another machine, run `make build`. The archive i
 
 The **Panel** settings let you change the tile position and icon, enable the optional top-bar icon, and show or hide sliders and color controls. Position `0` uses GNOME's default placement. Position `1` puts the tile first.
 
-Tokens are stored in your keyring. The extension uses GSettings for the server URL, favorites, and appearance preferences. **Forget connection** clears the current server's credentials and favorites. Switching server URLs clears favorites so device identifiers from one server do not carry over to another. For HTTPS, the system must trust the server's certificate.
+**Forget connection** removes the current server's token from your keyring and clears your favorites. Switching to another server also clears your favorites. For HTTPS, your system must trust the server's certificate.
 
 ## Supported controls
 
@@ -80,47 +76,6 @@ Available controls depend on the capabilities and permissions exposed by Home As
 | Sensors and binary sensors | Read their current state |
 
 The eyedropper beside the color presets opens the color editor for lamps that support color. A color or brightness selection can turn a light on. Thermostats that use a temperature range display their state. Adjust their range or HVAC mode in Home Assistant.
-
-## Develop and test
-
-Run `make` to list the available commands.
-
-| Command | Purpose |
-| --- | --- |
-| `make dev` | Open an isolated GNOME Devkit window with seven demo entities |
-| `make check` | Validate JavaScript, GSettings schemas, and translations, then run unit and API tests |
-| `make test` | Run the model tests and the GJS client against a local Home Assistant fixture |
-| `make test-ui` | Exercise Quick Settings, device controls, the color picker, and preferences in a headless GNOME session |
-| `make test-preview` | Verify demo startup and preference synchronization in a headless GNOME session |
-| `make clean` | Remove the generated ZIP, schema, and translation catalog |
-
-The Devkit uses a temporary profile, keyring, and local server. Demo commands are logged to `tests/artifacts/devkit.log`. Use **Ctrl+C** in the launch terminal to stop it. Restart the preview to load code changes.
-
-### Code layout
-
-| Path | Responsibility |
-| --- | --- |
-| `extension.js` and `lib/controls.js` | Quick Settings integration, device widgets, and command feedback |
-| `prefs.js` and `lib/preferences.js` | Server setup, entity discovery, and preferences |
-| `lib/client.js` and `lib/model.js` | Home Assistant REST discovery, WebSocket subscriptions, state updates, and service payloads |
-| `lib/credentials.js` | Server-scoped token storage via libsecret |
-| `lib/color-picker*.js` | Native color chooser in a separate GTK process |
-| `lib/icons.js` and `icons/` | Symbolic icon selection, import, and upstream assets |
-| `schemas/`, `po/`, and `tests/` | GSettings schema, translations, and tests |
-
-The preferences process verifies the server and lists entities via REST. The extension process subscribes to selected entities over WebSocket and sends Home Assistant service calls. A control shows the requested value immediately and reconciles it with the next server update. Opening the color chooser launches a GTK process that returns the selected RGB values to the extension.
-
-For contributions, keep device commands and capability checks in the model where possible. Wrap new UI strings for translation, run `make check`, and use `make test-ui` for changes to Shell widgets or GTK preferences.
-
-## Publish to GNOME Extensions
-
-In GitHub, go to **Actions → Publish to GNOME Extensions → Run workflow**. The [workflow](.github/workflows/publish-gnome-extensions.yml) runs `make check` on Fedora 44, builds the extension, and saves the installable ZIP under **Artifacts**. Leave **Submit to extensions.gnome.org for review** unchecked to build and inspect the ZIP without an account.
-
-1. Read the [GNOME Extensions review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and the [upload terms](https://extensions.gnome.org/upload/). Make the project URL in `metadata.json` accessible to reviewers and users when you are ready to release.
-2. In **Settings → Secrets and variables → Actions** on GitHub, create the repository secrets `EGO_USERNAME` and `EGO_PASSWORD`. Use the GNOME Extensions account that owns or will own the listing.
-3. Update `version-name` in `metadata.json` for the release. Run the workflow on `main` with **Submit to extensions.gnome.org for review** checked. This accepts the upload terms and sends the ZIP using the [official GNOME CLI](https://gjs.guide/extensions/upgrading/gnome-shell-49.html#extension-tools). Approved versions become available in the catalog.
-
-If an upload times out, check your GNOME Extensions account for the submitted version before retrying. You can also download the build-only ZIP and submit it from the [GNOME Extensions upload page](https://extensions.gnome.org/upload/).
 
 ## License
 

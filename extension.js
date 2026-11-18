@@ -11,7 +11,7 @@ import {HomeAssistantClient} from './lib/client.js';
 import {lookupToken} from './lib/credentials.js';
 import {DeviceControl, ScrollableSection} from './lib/controls.js';
 import {isOn, parseDevices} from './lib/model.js';
-import {resolveShellIcon} from './lib/icons.js';
+import {ShellIcons} from './lib/icons.js';
 
 const HomeToggle = GObject.registerClass(
 class GshHomeToggle extends QuickSettings.QuickMenuToggle {
@@ -35,10 +35,21 @@ class GshHomeToggle extends QuickSettings.QuickMenuToggle {
         }, 'emblem-system-symbolic');
         settingsItem.visible = Main.sessionMode.allowSettings;
         this.menu._settingsActions[extension.uuid] = settingsItem;
-        this.menu.connect('open-state-changed', (_menu, open) => {
+        this._menuOpenId = this.menu.connect('open-state-changed', (_menu, open) => {
             if (open)
                 this.resizeDeviceList();
         });
+    }
+
+    destroy() {
+        this.menu.disconnect(this._menuOpenId);
+        this._menuOpenId = 0;
+        this._statusItem.destroy();
+        this._statusItem = null;
+        this._empty.destroy();
+        this._empty = null;
+        // QuickMenuToggle owns the menu and destroys its remaining rows.
+        super.destroy();
     }
 
     resizeDeviceList() {
@@ -67,6 +78,7 @@ export default class GnomeSmartHome extends Extension {
         this._states = new Map();
         this._status = 'unconfigured';
         this._controls = [];
+        this._icons = new ShellIcons();
         this._indicator = new QuickSettings.SystemIndicator();
         this._panelIcon = this._indicator._addIndicator();
         this._panelIcon.icon_name = 'go-home-symbolic';
@@ -104,6 +116,7 @@ export default class GnomeSmartHome extends Extension {
         this._favorites = parseDevices(this._settings.get_string('devices'));
         this._controls = this._favorites.map(favorite => {
             const control = new DeviceControl(favorite, {
+                icons: this._icons,
                 showSliders: this._settings.get_boolean('show-sliders'),
                 showColors: this._settings.get_boolean('show-color-controls'),
                 runCommand: command => this._runCommand(command),
@@ -115,8 +128,13 @@ export default class GnomeSmartHome extends Extension {
         this._sync();
     }
 
-    _syncTileIcon() {
-        const icon = resolveShellIcon(this._settings.get_string('tile-icon') || 'go-home-symbolic', 'home');
+    async _syncTileIcon() {
+        const icons = this._icons;
+        const choice = this._settings.get_string('tile-icon') || 'go-home-symbolic';
+        const icon = await icons.resolve(choice, 'home');
+        // A later settings change or disable may supersede this lookup.
+        if (!icon || icons !== this._icons || choice !== (this._settings.get_string('tile-icon') || 'go-home-symbolic'))
+            return;
         this._toggle.gicon = icon;
         this._panelIcon.gicon = icon;
         this._toggle.menu.setHeader(icon, _('Smart Home'), 'Home Assistant');
@@ -229,7 +247,7 @@ export default class GnomeSmartHome extends Extension {
         Main.panel.closeQuickSettings();
         let process;
         try {
-            // Use the Shell display so the GTK helper opens inside Devkit too.
+            // GTK must run outside Shell. Use Shell's display for Devkit as well.
             const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
             launcher.set_environ(global.create_app_launch_context(0, -1).get_environment());
             launcher.setenv('GDK_BACKEND', 'wayland', true);
@@ -294,6 +312,8 @@ export default class GnomeSmartHome extends Extension {
         for (const control of this._controls)
             control.destroy();
         this._controls = [];
+        this._icons.destroy();
+        this._icons = null;
         for (const item of this._indicator.quickSettingsItems)
             item.destroy();
         this._indicator.destroy();
@@ -303,6 +323,7 @@ export default class GnomeSmartHome extends Extension {
         this._defaultTileSibling = null;
         this._defaultTilePrevious = null;
         this._states = null;
+        this._favorites = null;
         this._settings = null;
     }
 }
