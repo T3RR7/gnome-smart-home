@@ -6,7 +6,7 @@
   "shell-version": [
     "50"
   ],
-  "version-name": "0.3.2",
+  "version-name": "0.3.3",
   "settings-schema": "org.gnome.shell.extensions.gnome-smart-home",
   "gettext-domain": "gnome-smart-home"
 }
