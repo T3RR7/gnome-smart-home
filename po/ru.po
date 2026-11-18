@@ -1,0 +1,442 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Gnome Smart Home 0.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 14:00+0300\n"
+"PO-Revision-Date: 2026-11-18 14:00+0300\n"
+"Last-Translator: Gnome Smart Home contributors\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Access denied · check Settings"
+msgstr "Доступ запрещён · проверьте настройки"
+
+msgid "Access token rejected · check Settings"
+msgstr "Токен отклонён · проверьте настройки"
+
+msgid "Active"
+msgstr "Активно"
+
+msgid "Add a home icon next to the system indicators."
+msgstr "Значок дома рядом с системными индикаторами."
+
+msgid "Add an access token in Settings"
+msgstr "Добавьте токен доступа в настройках"
+
+msgid "All types"
+msgstr "Все типы"
+
+msgid "Available devices"
+msgstr "Доступные устройства"
+
+msgid "Binary sensors"
+msgstr "Двоичные датчики"
+
+msgid "Brightness"
+msgstr "Яркость"
+
+msgid "Brightness, fan speed, and cover position when supported."
+msgstr "Яркость, скорость вентилятора и положение штор, если поддерживаются."
+
+msgid "Buttons"
+msgstr "Кнопки"
+
+msgid "Check the server address, network, and TLS certificate, then try again."
+msgstr "Проверьте адрес сервера, подключение к сети и сертификат TLS, затем повторите попытку."
+
+msgid "Choose devices"
+msgstr "Выберите устройства"
+
+msgid "Choose devices from the list below."
+msgstr "Выберите устройства из списка ниже."
+
+msgid "Choose devices in Settings"
+msgstr "Выберите устройства в настройках"
+
+msgid "Climate"
+msgstr "Климат"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Closed"
+msgstr "Закрыто"
+
+msgid "Closing"
+msgstr "Закрывается"
+
+msgid "Connect to Home Assistant first"
+msgstr "Сначала подключитесь к Home Assistant"
+
+msgid "Connect to your Home Assistant server to choose and control devices."
+msgstr "Подключитесь к серверу Home Assistant для выбора устройств и управления ими."
+
+msgid "Connected"
+msgstr "Подключено"
+
+msgid "Connected. Choose your devices."
+msgstr "Подключено. Выберите устройства."
+
+msgid "Connecting…"
+msgstr "Подключение…"
+
+msgid "Connection"
+msgstr "Подключение"
+
+msgid "Connection failed"
+msgstr "Не удалось подключиться"
+
+msgid "Could not access the GNOME keyring. Unlock your login keyring and try again."
+msgstr "Не удалось открыть связку ключей GNOME. Разблокируйте связку ключей входа и повторите попытку."
+
+msgid "Could not open Home Assistant."
+msgstr "Не удалось открыть Home Assistant."
+
+msgid "Could not read the GNOME keyring"
+msgstr "Не удалось прочитать связку ключей GNOME"
+
+msgid "Could not remove the saved token."
+msgstr "Не удалось удалить сохранённый токен."
+
+msgid "Covers"
+msgstr "Шторы и жалюзи"
+
+msgid "Create it in Home Assistant → Profile → Security. Leave the token field empty to keep the saved token for this URL."
+msgstr "Создайте токен в Home Assistant → Профиль → Безопасность. Оставьте поле пустым, чтобы использовать сохранённый токен для этого адреса."
+
+msgid "Custom name (empty uses Home Assistant name)"
+msgstr "Своё название (пусто — название из Home Assistant)"
+
+msgid "Decrease temperature"
+msgstr "Уменьшить температуру"
+
+msgid "Device type"
+msgstr "Тип устройства"
+
+msgid "Devices"
+msgstr "Устройства"
+
+msgid "Enter a valid http:// or https:// server URL without credentials, query, or fragment."
+msgstr "Введите адрес сервера с http:// или https:// без логина, пароля, параметров запроса и фрагмента."
+
+msgid "Enter an access token for this server."
+msgstr "Введите токен доступа для этого сервера."
+
+msgid "Example: http://homeassistant.local:8123"
+msgstr "Например: http://homeassistant.local:8123"
+
+msgid "Expand a device to rename it. Use the arrows to change its position."
+msgstr "Раскройте устройство, чтобы изменить название. Стрелки меняют порядок в меню."
+
+msgid "Fans"
+msgstr "Вентиляторы"
+
+msgid "Find devices"
+msgstr "Найти устройства"
+
+msgid "Forget"
+msgstr "Забыть"
+
+msgid "Forget connection"
+msgstr "Забыть подключение"
+
+msgid "Helpers"
+msgstr "Помощники"
+
+msgid "Home Assistant rejected this token. Create a new long-lived access token."
+msgstr "Home Assistant отклонил токен. Создайте новый долгосрочный токен доступа."
+
+msgid "In Quick Settings"
+msgstr "В быстрых настройках"
+
+msgid "Inactive"
+msgstr "Неактивно"
+
+msgid "Increase temperature"
+msgstr "Увеличить температуру"
+
+msgid "Input buttons"
+msgstr "Кнопки-помощники"
+
+msgid "Lights"
+msgstr "Освещение"
+
+msgid "Long-lived access token"
+msgstr "Долгосрочный токен доступа"
+
+msgid "Move down"
+msgstr "Переместить ниже"
+
+msgid "Move up"
+msgstr "Переместить выше"
+
+msgid "No devices selected"
+msgstr "Устройства не выбраны"
+
+msgid "No matching devices"
+msgstr "Устройства не найдены"
+
+msgid "Not connected"
+msgstr "Нет подключения"
+
+msgid "Offline · reconnecting automatically"
+msgstr "Нет связи · подключаемся автоматически"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Open Connection and enter your server URL and token."
+msgstr "Откройте «Подключение» и введите адрес сервера и токен."
+
+msgid "Open Home Assistant"
+msgstr "Открыть Home Assistant"
+
+msgid "Opening"
+msgstr "Открывается"
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Position"
+msgstr "Положение"
+
+msgid "Reconnect"
+msgstr "Переподключиться"
+
+msgid "Remove device"
+msgstr "Убрать устройство"
+
+msgid "Remove this server’s saved token from the keyring."
+msgstr "Удалить сохранённый токен этого сервера из связки ключей."
+
+msgid "Save and connect"
+msgstr "Сохранить и подключиться"
+
+msgid "Scenes"
+msgstr "Сцены"
+
+msgid "Scripts"
+msgstr "Сценарии"
+
+msgid "Search devices"
+msgstr "Поиск устройств"
+
+msgid "Search name or entity ID"
+msgstr "Название или идентификатор сущности"
+
+msgid "Sensors"
+msgstr "Датчики"
+
+msgid "Server URL"
+msgstr "Адрес сервера"
+
+msgid "Set up"
+msgstr "Настроить"
+
+msgid "Set up Home Assistant"
+msgstr "Настройте Home Assistant"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Show panel icon"
+msgstr "Показывать значок на панели"
+
+msgid "Show sliders"
+msgstr "Показывать ползунки"
+
+msgid "Showing the first 100 matches. Refine your search to find more."
+msgstr "Показаны первые 100 совпадений. Уточните поиск для остальных."
+
+msgid "Smart Home"
+msgstr "Умный дом"
+
+msgid "Speed"
+msgstr "Скорость"
+
+msgid "Stop"
+msgstr "Остановить"
+
+msgid "Switches"
+msgstr "Выключатели и розетки"
+
+msgid "The action failed. Check the device and your connection."
+msgstr "Не удалось выполнить действие. Проверьте устройство и подключение."
+
+msgid "This user does not have permission to read entities."
+msgstr "У этого пользователя нет прав на чтение сущностей."
+
+msgid "Try another name or device type."
+msgstr "Попробуйте другое название или тип устройства."
+
+msgid "Unavailable"
+msgstr "Недоступно"
+
+msgid "Updating…"
+msgstr "Обновление…"
+
+msgid "Your token stays in the GNOME keyring"
+msgstr "Токен хранится в связке ключей GNOME"
+
+msgid "devices"
+msgstr "устройств"
+
+msgid "entities available"
+msgstr "доступных сущностей"
+
+msgid "0 keeps the default position; 1 places Smart Home first."
+msgstr "0 — положение по умолчанию; 1 — плитка «Умный дом» в начале."
+
+msgid "Apply color"
+msgstr "Применить цвет"
+
+msgid "Blinds"
+msgstr "Жалюзи"
+
+msgid "Blue"
+msgstr "Синий"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "Ceiling light"
+msgstr "Потолочный светильник"
+
+msgid "Choose"
+msgstr "Выбрать"
+
+msgid "Choose a simple monochrome SVG without images or gradients."
+msgstr "Выберите простой одноцветный SVG без изображений и градиентов."
+
+msgid "Choose icon"
+msgstr "Выбрать иконку"
+
+msgid "Choose monochrome SVG…"
+msgstr "Выбрать одноцветный SVG…"
+
+msgid "Choose symbolic SVG icon"
+msgstr "Выбрать символическую SVG-иконку"
+
+msgid "Color temperature"
+msgstr "Температура света"
+
+msgid "Custom color"
+msgstr "Свой цвет"
+
+msgid "Desk lamp"
+msgstr "Настольная лампа"
+
+msgid "Fan"
+msgstr "Вентилятор"
+
+msgid "Green"
+msgstr "Зелёный"
+
+msgid "Home"
+msgstr "Дом"
+
+msgid "Icon"
+msgstr "Иконка"
+
+msgid "Light bulb"
+msgstr "Лампочка"
+
+msgid "Light group"
+msgstr "Группа светильников"
+
+msgid "Orange"
+msgstr "Оранжевый"
+
+msgid "Pink"
+msgstr "Розовый"
+
+msgid "Position in Quick Settings"
+msgstr "Положение в быстрых настройках"
+
+msgid "Power"
+msgstr "Питание"
+
+msgid "Purple"
+msgstr "Фиолетовый"
+
+msgid "Red"
+msgstr "Красный"
+
+msgid "SVG icons"
+msgstr "SVG-иконки"
+
+msgid "Scene"
+msgstr "Сцена"
+
+msgid "Script"
+msgstr "Сценарий"
+
+msgid "Sensor"
+msgstr "Датчик"
+
+msgid "Show light colors"
+msgstr "Показывать настройки цвета ламп"
+
+msgid "Smart Home tile icon"
+msgstr "Иконка плитки «Умный дом»"
+
+msgid "Socket"
+msgstr "Розетка"
+
+msgid "Symbolic icon name"
+msgstr "Название символической иконки"
+
+msgid "Symbolic icons follow your GNOME theme."
+msgstr "Одноцветные символические иконки используют цвета темы GNOME."
+
+msgid "Thermometer"
+msgstr "Термометр"
+
+msgid "This symbolic icon is not in your icon theme."
+msgstr "Этой символической иконки нет в вашей теме."
+
+msgid "Turquoise"
+msgstr "Бирюзовый"
+
+msgid "Use device default"
+msgstr "Иконка устройства по умолчанию"
+
+msgid "White"
+msgstr "Белый"
+
+msgid "White temperature and a color palette when supported by the lamp."
+msgstr "Температура белого света и палитра цветов, если лампа их поддерживает."
+
+msgid "Yellow"
+msgstr "Жёлтый"
+
+msgid "Night light"
+msgstr "Ночное освещение"
+
+msgid "Daylight"
+msgstr "Дневной свет"
+
+msgid "Moonlight"
+msgstr "Лунный свет"
+
+msgid "Color"
+msgstr "Цвет"
+
+msgid "Wall power"
+msgstr "Питание от сети"
+
+msgid "Switch"
+msgstr "Выключатель"
+
+msgid "Choose any color"
+msgstr "Выбрать произвольный цвет"
+
+msgid "Light color"
+msgstr "Цвет лампы"
+
+msgid "Could not open the color picker."
+msgstr "Не удалось открыть окно выбора цвета."

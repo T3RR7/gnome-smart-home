@@ -1,0 +1,70 @@
+/* Use GNOME's theme for all surfaces, colors, switches, and sliders. */
+.gsh-device-list {
+    max-height: 320px;
+}
+
+.gsh-device-list .popup-menu-item {
+    min-width: 0;
+}
+
+.gsh-slider-row {
+    spacing: 12px;
+}
+
+.gsh-percent {
+    min-width: 3.5em;
+    text-align: right;
+    font-feature-settings: "tnum";
+}
+
+.gsh-state {
+    max-width: 11em;
+    font-size: 0.9em;
+    color: -st-accent-color;
+}
+
+.gsh-buttons-row {
+    spacing: 8px;
+}
+
+.gsh-control-button {
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.gsh-temperature {
+    min-width: 6em;
+    font-feature-settings: "tnum";
+}
+
+.gsh-kelvin {
+    min-width: 5em;
+    text-align: right;
+    font-feature-settings: "tnum";
+}
+
+.gsh-palette-row {
+    spacing: 4px;
+}
+
+.gsh-color-swatch {
+    padding: 3px;
+    border-radius: 99px;
+    border: 2px solid transparent;
+}
+
+.gsh-color-swatch:checked,
+.gsh-color-swatch:focus {
+    border-color: -st-accent-color;
+}
+
+.gsh-color-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 99px;
+}
+
+.gsh-color-picker-button {
+    padding: 4px;
+    border-radius: 99px;
+}

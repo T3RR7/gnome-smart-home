@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.gnome-smart-home" path="/org/gnome/shell/extensions/gnome-smart-home/">
+    <key name="server-url" type="s">
+      <default>''</default>
+      <summary>Home Assistant base URL</summary>
+    </key>
+    <key name="devices" type="s">
+      <default>'[]'</default>
+      <summary>Ordered favorite entities and their custom names</summary>
+    </key>
+    <key name="show-indicator" type="b">
+      <default>false</default>
+      <summary>Show an additional home icon in the top panel</summary>
+    </key>
+    <key name="show-sliders" type="b">
+      <default>true</default>
+      <summary>Show brightness, speed, and position sliders</summary>
+    </key>
+    <key name="show-color-controls" type="b">
+      <default>true</default>
+      <summary>Show color temperature and palette for capable lights</summary>
+    </key>
+    <key name="tile-icon" type="s">
+      <default>''</default>
+      <summary>Custom symbolic icon for the Smart Home tile</summary>
+    </key>
+    <key name="tile-position" type="u">
+      <default>0</default>
+      <range min="0" max="32"/>
+      <summary>Quick Settings position; zero uses the default position</summary>
+    </key>
+    <key name="credential-revision" type="u">
+      <default>0</default>
+      <summary>Notify the extension when keyring credentials change</summary>
+    </key>
+  </schema>
+</schemalist>

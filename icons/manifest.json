@@ -1,0 +1,54 @@
+{
+  "project": "GNOME Icon Development Kit",
+  "repository": "https://gitlab.gnome.org/Teams/Design/icon-development-kit",
+  "revision": "869c02a0f00fa089e11117b3f362f8cf9fadd093",
+  "license": "CC0-1.0",
+  "modifications": "SVG file contents are unmodified. Filenames have a -symbolic suffix for the standard GNOME symbolic loader.",
+  "icons": [
+    {
+      "file": "icons/gnome/lightbulb-modern-symbolic.svg",
+      "upstream_path": "icons/lightbulb-modern.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/lightbulb-modern.svg",
+      "sha256": "417a41e89e1215ac6e0c151e62c25a42b253f64f12b0139f73791de9194c04be"
+    },
+    {
+      "file": "icons/gnome/lamp-symbolic.svg",
+      "upstream_path": "icons/lamp.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/lamp.svg",
+      "sha256": "e9189d6ffb018554e3420b64574637401350e16d2d6285b84d2b639c13f2b4f9"
+    },
+    {
+      "file": "icons/gnome/plug-symbolic.svg",
+      "upstream_path": "icons/plug.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/plug.svg",
+      "sha256": "04322ba13267ceca747bcad2cd60664c804b341f287203bb24168b0ee5d1f0e1"
+    },
+    {
+      "file": "icons/gnome/chip-symbolic.svg",
+      "upstream_path": "icons/chip.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/chip.svg",
+      "sha256": "4cc6ab3644cffdce5d34f4a8ba74694f3541dee36f536a080d980e52ef43ea5e"
+    },
+    {
+      "file": "icons/gnome/devices-symbolic.svg",
+      "upstream_path": "icons/devices.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/devices.svg",
+      "sha256": "fc189026661320c9408f34af217cd72d3e710e2cfb30a764ebda2ad51f1edd02"
+    },
+    {
+      "file": "icons/gnome/ac-symbolic.svg",
+      "upstream_path": "icons/ac.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/ac.svg",
+      "sha256": "424f1f3e986cfe88ac4503a84fb7d517e25372b7fe3c3853c6e03ef5ad68c354"
+    },
+    {
+      "file": "icons/gnome/switch-left-symbolic.svg",
+      "upstream_path": "icons/switch-left.svg",
+      "source": "https://gitlab.gnome.org/Teams/Design/icon-development-kit/-/blob/869c02a0f00fa089e11117b3f362f8cf9fadd093/icons/switch-left.svg",
+      "sha256": "a8aacde386d2c0129dcb29d25c30a0a0d08ec3e0c9b18406353630c5d865f2fe"
+    }
+  ],
+  "authors": [
+    "Jakub Steiner"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "uuid": "gnome-smart-home@local",
+  "name": "Gnome Smart Home",
+  "description": "Control your Home Assistant devices from GNOME Quick Settings.",
+  "shell-version": ["50"],
+  "version": 3,
+  "version-name": "0.3.0",
+  "settings-schema": "org.gnome.shell.extensions.gnome-smart-home",
+  "gettext-domain": "gnome-smart-home"
+}
