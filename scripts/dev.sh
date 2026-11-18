@@ -54,7 +54,7 @@ printf 'Open Quick Settings → Smart Home → Settings inside the Devkit window
 printf 'Stop with Ctrl+C. After editing code, run this command again.\n'
 printf 'Log: %s/%s\n\n' "$PWD" "$log"
 runner=(gnome-shell-test-tool "${shell_args[@]}" "$mode"
-    --extra-filter=org.gnome.Shell.Extensions --extra-filter=org.gnome.SmartHome.ColorPicker
+    --extra-filter=org.gnome.Shell.Extensions
     --extension dist/gnome-smart-home@local.shell-extension.zip "$PWD/tests/preview.js")
 if [[ ${GSH_PREVIEW_SMOKE:-0} == 1 ]]; then
     timeout 90s "${runner[@]}" 2>&1 | tee "$log"

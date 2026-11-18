@@ -408,8 +408,8 @@ msgstr "Иконка устройства по умолчанию"
 msgid "White"
 msgstr "Белый"
 
-msgid "White temperature and a color palette when supported by the lamp."
-msgstr "Температура белого света и палитра цветов, если лампа их поддерживает."
+msgid "White temperature and a color wheel when supported by the lamp."
+msgstr "Температура белого света и цветовой круг, если лампа их поддерживает."
 
 msgid "Yellow"
 msgstr "Жёлтый"
@@ -438,5 +438,5 @@ msgstr "Выбрать произвольный цвет"
 msgid "Light color"
 msgstr "Цвет лампы"
 
-msgid "Could not open the color picker."
-msgstr "Не удалось открыть окно выбора цвета."
+msgid "Hex color"
+msgstr "HEX-код цвета"

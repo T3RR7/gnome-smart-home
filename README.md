@@ -8,12 +8,12 @@ Captured on GNOME Shell 50 with demo Home Assistant entities.
 
 | Lights, switches, and fans | Covers, thermostats, and scenes |
 | --- | --- |
-| ![Smart Home tile and menu with light brightness, white temperature, color presets, and fan speed](docs/screenshots/quick-settings.png) | ![Smart Home menu with blind position, thermostat setpoint, sensor reading, and scene activation](docs/screenshots/climate-and-covers.png) |
+| ![Smart Home tile and menu with light brightness, white temperature, a collapsed color dropdown, and fan speed](docs/screenshots/quick-settings.png) | ![Smart Home menu with blind position, thermostat setpoint, sensor reading, and scene activation](docs/screenshots/climate-and-covers.png) |
 
 <details>
 <summary>Custom light color</summary>
 
-![Color picker with a color field, hue slider, and hexadecimal input](docs/screenshots/light-color-picker.png)
+![Color wheel and hex input expanded below the lamp's white-temperature slider](docs/screenshots/light-color-picker.png)
 
 </details>
 
@@ -67,7 +67,7 @@ Available controls depend on the capabilities and permissions exposed by Home As
 
 | Entity | Controls |
 | --- | --- |
-| Lights | On/off, brightness, white temperature, color presets, and a full color picker |
+| Lights | On/off, brightness, white temperature, and an inline color wheel with hex input |
 | Switches and input booleans | On/off |
 | Fans | On/off and speed |
 | Covers | Open, close, stop, and position |
@@ -75,7 +75,9 @@ Available controls depend on the capabilities and permissions exposed by Home As
 | Scenes, scripts, and buttons | Activate, run, or press |
 | Sensors and binary sensors | Read their current state |
 
-The eyedropper beside the color presets opens the color editor for lamps that support color. A color or brightness selection can turn a light on. Thermostats that use a temperature range display their state. Adjust their range or HVAC mode in Home Assistant.
+For lamps that support color, select the arrow beside the white-temperature value to expand the color wheel. Click a color on the wheel, or enter a hex value and select **Apply color**. RGB-only lights show a **Light color** row. A color or brightness selection can turn a light on.
+
+Thermostats that use a temperature range display their state. Adjust their range or HVAC mode in Home Assistant.
 
 ## License
 

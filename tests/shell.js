@@ -23,6 +23,15 @@ function pause(milliseconds) {
     }));
 }
 
+async function clickAt(pointer, x, y) {
+    pointer.notify_absolute_motion(GLib.get_monotonic_time(), x, y);
+    global.stage.context.get_backend().get_default_seat().warp_pointer(Math.round(x), Math.round(y));
+    await pause(30);
+    pointer.notify_button(GLib.get_monotonic_time(), Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
+    await pause(30);
+    pointer.notify_button(GLib.get_monotonic_time(), Clutter.BUTTON_PRIMARY, Clutter.ButtonState.RELEASED);
+}
+
 // A light bulb is a single foreground shape. Shell used to paint its fill and
 // stroke on opposite sides of the menu background's brightness.
 async function checkLampIcon(icon) {
@@ -64,13 +73,6 @@ export async function run() {
     const prefsTest = launcher.spawnv(['gjs', '-m', prefsTestPath]);
     await new Promise((resolve, reject) => {
         prefsTest.wait_check_async(null, (process, result) => {
-            try { process.wait_check_finish(result); resolve(); } catch (error) { reject(error); }
-        });
-    });
-    const colorTestPath = Gio.File.new_for_uri(import.meta.url).get_parent().get_child('color-picker-smoke.js').get_path();
-    const colorTest = launcher.spawnv(['gjs', '-m', colorTestPath]);
-    await new Promise((resolve, reject) => {
-        colorTest.wait_check_async(null, (process, result) => {
             try { process.wait_check_finish(result); resolve(); } catch (error) { reject(error); }
         });
     });
@@ -157,73 +159,70 @@ export async function run() {
             stream.close(null);
         }
         const callsBeforeClick = fixture.calls.length;
-        pointer.notify_absolute_motion(GLib.get_monotonic_time(), x + width / 2, y + height / 2);
-        global.stage.context.get_backend().get_default_seat().warp_pointer(Math.round(x + width / 2), Math.round(y + height / 2));
-        await pause(30);
-        pointer.notify_button(GLib.get_monotonic_time(), Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
-        await pause(30);
-        pointer.notify_button(GLib.get_monotonic_time(), Clutter.BUTTON_PRIMARY, Clutter.ButtonState.RELEASED);
+        await clickAt(pointer, x + width / 2, y + height / 2);
         await waitUntil(() => fixture.calls.length > callsBeforeClick && !lamp._pending, 'pointer click on the native switch handle');
         assert(fixture.calls.length === callsBeforeClick + 1, 'one mouse click sends exactly one service command');
         assert(!lamp._toggle.state && fixture.states.get('light.desk').state === 'off', 'mouse click changes both native and server state');
         print('PASS real pointer click toggles the native switch once');
 
-        assert(lamp._temperatureRow.visible && lamp._paletteRow.visible, 'color and tunable-white controls are shown');
-        lamp._swatches.find(({hex}) => hex === '#007aff').button.emit('clicked', 1);
-        await waitUntil(() => fixture.states.get('light.desk').attributes.rgb_color[2] === 255 && !lamp._pending, 'palette RGB command');
-        assert(fixture.calls.at(-1).service_data.rgb_color.join(',') === '0,122,255', 'palette sends the chosen RGB values');
+        assert(lamp._sliderRow.visible && lamp._temperatureRow.visible && !lamp._colorRow.visible,
+            'brightness and temperature show above the initially collapsed color wheel');
+        assert(lamp._temperatureSlider.width >= lamp._slider.width * 0.75,
+            'temperature slider retains its width when the chevron is added');
         lamp._temperatureSlider.value = 1;
         lamp._flushTemperature();
         await waitUntil(() => fixture.states.get('light.desk').attributes.color_temp_kelvin === 6500 && !lamp._pending, 'white-temperature command');
         assert(fixture.calls.at(-1).service_data.color_temp_kelvin === 6500, 'temperature slider sends kelvin within device bounds');
-        print('PASS color palette and white-temperature slider send and display real state updates');
-        const originalPicker = lamp._pickColor;
-        lamp._pickColor = async () => [12, 133, 212];
-        await lamp._chooseColor();
-        assert(fixture.calls.at(-1).service_data.rgb_color.join(',') === '12,133,212', 'full color chooser result is sent to the chosen light');
-        lamp._pickColor = originalPicker;
-        const beforeNativePicker = fixture.calls.length;
-        const nativePick = lamp._chooseColor();
-        let pickerWindow;
-        let pickerChecks = 0;
-        await waitUntil(() => {
-            if (++pickerChecks === 50)
-                print(`Color picker windows: ${global.get_window_actors().map(actor => actor.meta_window.get_wm_class()).join(', ')}`);
-            pickerWindow = global.get_window_actors().map(actor => actor.meta_window)
-                .find(window => window.get_wm_class() === 'org.gnome.SmartHome.ColorPicker');
-            return Boolean(pickerWindow);
-        }, 'native color picker process on the nested display', 15000);
-        if (GLib.getenv('GSH_CAPTURE_TEST_UI') === '1') {
-            await waitUntil(() => {
-                const rect = pickerWindow.get_frame_rect();
-                return rect.width > 100 && rect.height > 100 && pickerWindow.get_compositor_private()?.mapped;
-            }, 'native color picker first frame');
-            await pause(100);
-            await Scripting.waitLeisure();
-            const rect = pickerWindow.get_frame_rect();
-            const artifact = Gio.File.new_for_uri(import.meta.url).get_parent().get_child('artifacts/color-picker.png');
-            const stream = artifact.replace(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-            const shooter = new Shell.Screenshot();
-            await new Promise((resolve, reject) => shooter.screenshot_area(rect.x, rect.y, rect.width, rect.height, stream,
-                (source, result) => {
-                    try { source.screenshot_area_finish(result); resolve(); } catch (error) { reject(error); }
-                }));
-            stream.close(null);
-        }
-        pickerWindow.delete(Clutter.get_current_event_time());
-        await nativePick;
-        assert(fixture.calls.length === beforeNativePicker && instance._colorProcess === null,
-            'cancelling the real picker sends no device command and cleans up its process');
-        Main.panel.statusArea.quickSettings.menu.open();
+
+        const beforeOpen = fixture.calls.length;
+        const [arrowX, arrowY] = lamp._colorToggle.get_transformed_position();
+        const [arrowWidth, arrowHeight] = lamp._colorToggle.get_transformed_size();
+        await clickAt(pointer, arrowX + arrowWidth / 2, arrowY + arrowHeight / 2);
+        await waitUntil(() => lamp._colorRow.mapped, 'color dropdown opens from the temperature row');
+        await Scripting.waitLeisure();
+        assert(instance._toggle.menu.isOpen && fixture.calls.length === beforeOpen, 'opening the dropdown keeps Quick Settings open and sends no command');
+        const [pickerX, pickerY] = lamp._colorRow.get_transformed_position();
+        const [, temperatureY] = lamp._temperatureRow.get_transformed_position();
+        const [, brightnessY] = lamp._sliderRow.get_transformed_position();
+        assert(brightnessY < temperatureY && temperatureY < pickerY, 'picker follows the unchanged brightness and temperature rows');
+        const wheel = lamp._colorPicker._wheel;
+        const [wheelX, wheelY] = wheel.get_transformed_position();
+        const [wheelWidth, wheelHeight] = wheel.get_transformed_size();
+        const [pickerWidth] = lamp._colorRow.get_transformed_size();
+        assert(wheelX >= pickerX && wheelX + wheelWidth <= pickerX + pickerWidth + 1, 'wheel fits inside the dropdown');
+
+        const {brightness} = fixture.states.get('light.desk').attributes;
+        await clickAt(pointer, wheelX + wheelWidth * 0.78, wheelY + wheelHeight / 2);
+        await waitUntil(() => fixture.calls.length === beforeOpen + 1 && !lamp._pending, 'wheel sends one RGB command');
+        const data = fixture.calls.at(-1).service_data;
+        const [red, green, blue] = data.rgb_color;
+        assert(red === 255 && green > 80 && green < 135 && Math.abs(green - blue) < 8, 'wheel position selects a red hue with proportional saturation');
+        assert(Object.keys(data).join(',') === 'rgb_color', 'selecting a color sends only RGB');
+        assert(fixture.states.get('light.desk').attributes.brightness === brightness &&
+            fixture.states.get('light.desk').attributes.color_temp_kelvin === 6500, 'RGB selection leaves brightness and kelvin untouched');
+
+        const entry = lamp._colorPicker._entry;
+        entry.text = 'invalid';
+        entry.clutter_text.emit('activate');
+        assert(entry.has_style_pseudo_class('error') && fixture.calls.length === beforeOpen + 1, 'invalid hex is marked without a device command');
+        entry.text = '#0C85D4';
+        entry.clutter_text.emit('activate');
+        await waitUntil(() => fixture.calls.length === beforeOpen + 2 && !lamp._pending, 'hex color command');
+        assert(fixture.calls.at(-1).service_data.rgb_color.join(',') === '12,133,212' &&
+            entry.text === '#0c85d4' && lamp._colorPicker._hex === '#0c85d4', 'hex input keeps the exact selected RGB in the wheel');
+        assert(instance._toggle.menu.isOpen, 'choosing a color keeps Quick Settings open');
+        instance._toggle.menu.close();
+        assert(!lamp._colorRow.visible && !lamp._colorToggle.checked, 'closing the menu collapses the color dropdown');
         instance._toggle.menu.open();
         await Scripting.waitLeisure();
-        const [paletteX] = lamp._paletteRow.get_transformed_position();
-        const [paletteWidth] = lamp._paletteRow.get_transformed_size();
-        const [pickerX] = lamp._colorPickerButton.get_transformed_position();
-        const [pickerWidth] = lamp._colorPickerButton.get_transformed_size();
-        assert(pickerX + pickerWidth <= paletteX + paletteWidth + 1,
-            'the full-color button fits inside the palette row');
-        print('PASS real native picker opens inside the nested GNOME, cancels without commands, and fits the palette row');
+        print('PASS inline color dropdown, pointer selection, exact hex input and unchanged sliders');
+
+        fixture.change('light.desk', 'on', {supported_color_modes: ['rgb']});
+        await waitUntil(() => !lamp._temperatureSlider.visible && lamp._colorToggle.reactive, 'RGB-only light has a color row');
+        fixture.change('light.desk', 'on', {supported_color_modes: ['color_temp']});
+        await waitUntil(() => lamp._temperatureSlider.visible && !lamp._colorToggle.reactive, 'white-only light has no color dropdown');
+        fixture.change('light.desk', 'on', {supported_color_modes: ['color_temp', 'rgb']});
+        await waitUntil(() => lamp._temperatureSlider.visible && lamp._colorToggle.reactive, 'restore tunable color light');
 
         fixture.serviceDelayMs = 200;
         const beforeQueue = fixture.calls.length;
@@ -266,7 +265,6 @@ export async function run() {
         instance.disable();
         print('PASS appearance settings, disable cleanup and re-enable');
     } finally {
-        instance._colorProcess?.force_exit();
         await credentials.clearToken(fixture.url);
         fixture.stop();
     }

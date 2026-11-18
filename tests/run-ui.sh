@@ -32,5 +32,5 @@ export GIO_USE_VFS=local
 export GTK_IM_MODULE=simple
 export PATH="$PWD/tests:$PATH"
 timeout 90s gnome-shell-test-tool --wrap wayland-shell --headless --disable-animations \
-    --extra-filter=org.gnome.SmartHome.Test --extra-filter=org.gnome.SmartHome.ColorPicker \
+    --extra-filter=org.gnome.SmartHome.Test \
     --extension dist/gnome-smart-home@local.shell-extension.zip "$PWD/tests/shell.js"

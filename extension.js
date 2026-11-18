@@ -38,6 +38,10 @@ class GshHomeToggle extends QuickSettings.QuickMenuToggle {
         this._menuOpenId = this.menu.connect('open-state-changed', (_menu, open) => {
             if (open)
                 this.resizeDeviceList();
+            else {
+                extension.closeColorPickers();
+                this._devicesSection.cancelReveal();
+            }
         });
     }
 
@@ -52,7 +56,7 @@ class GshHomeToggle extends QuickSettings.QuickMenuToggle {
         super.destroy();
     }
 
-    resizeDeviceList() {
+    resizeDeviceList(colorPickerOpen = false) {
         const monitor = Main.layoutManager.findMonitorForActor(this) ?? Main.layoutManager.primaryMonitor;
         if (!monitor)
             return;
@@ -62,7 +66,8 @@ class GshHomeToggle extends QuickSettings.QuickMenuToggle {
         const chrome = Math.max(224, menuHeight - listHeight);
         const available = (monitor.y ?? 0) + monitor.height - sourceY - this.height - chrome - 28;
         const limit = Number.isFinite(available) ? available : 160;
-        const style = `min-height: 0px; max-height: ${Math.max(96, Math.min(320, Math.floor(limit)))}px;`;
+        const maxHeight = colorPickerOpen ? 390 : 320;
+        const style = `min-height: 0px; max-height: ${Math.max(96, Math.min(maxHeight, Math.floor(limit)))}px;`;
         if (this._devicesSection.actor.style !== style)
             this._devicesSection.actor.style = style;
     }
@@ -111,6 +116,7 @@ export default class GnomeSmartHome extends Extension {
     }
 
     _buildControls() {
+        this._toggle._devicesSection.cancelReveal();
         for (const control of this._controls)
             control.destroy();
         this._favorites = parseDevices(this._settings.get_string('devices'));
@@ -120,12 +126,32 @@ export default class GnomeSmartHome extends Extension {
                 showSliders: this._settings.get_boolean('show-sliders'),
                 showColors: this._settings.get_boolean('show-color-controls'),
                 runCommand: command => this._runCommand(command),
-                pickColor: initial => this._pickColor(initial),
+                onColorToggled: (row, expanded) => this._updateColorDropdown(control, row, expanded),
             });
             this._toggle._devicesSection.addMenuItem(control.section);
             return control;
         });
+        if (this._toggle.menu.isOpen)
+            this._toggle.resizeDeviceList();
         this._sync();
+    }
+
+    // Keep one picker open and leave room for the controls above it.
+    _updateColorDropdown(control, row, expanded) {
+        if (!this._toggle.menu.isOpen)
+            return;
+        if (expanded)
+            this.closeColorPickers(control);
+        this._toggle.resizeDeviceList(this._controls.some(item => item.colorPickerOpen));
+        if (expanded)
+            this._toggle._devicesSection.reveal(row);
+    }
+
+    closeColorPickers(except = null) {
+        for (const control of this._controls) {
+            if (control !== except)
+                control.closeColorPicker();
+        }
     }
 
     async _syncTileIcon() {
@@ -241,46 +267,6 @@ export default class GnomeSmartHome extends Extension {
         }
     }
 
-    async _pickColor(initial) {
-        if (!this._active || this._colorProcess)
-            return null;
-        Main.panel.closeQuickSettings();
-        let process;
-        try {
-            // GTK must run outside Shell. Use Shell's display for Devkit as well.
-            const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
-            launcher.set_environ(global.create_app_launch_context(0, -1).get_environment());
-            launcher.setenv('GDK_BACKEND', 'wayland', true);
-            process = launcher.spawnv(['gjs', '-m', `${this.path}/lib/color-picker-main.js`, JSON.stringify(initial)]);
-            this._colorProcess = process;
-            const stdout = await new Promise((resolve, reject) => {
-                process.communicate_utf8_async(null, null, (source, result) => {
-                    try {
-                        const [, output, errors] = source.communicate_utf8_finish(result);
-                        if (!source.get_successful())
-                            throw new Error(`color-picker-failed: ${errors.trim().slice(0, 400)}`);
-                        resolve(output);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            });
-            if (!this._active || !stdout.trim())
-                return null;
-            const rgb = JSON.parse(stdout);
-            return Array.isArray(rgb) && rgb.length === 3 && rgb.every(Number.isFinite) ? rgb : null;
-        } catch (error) {
-            if (this._active) {
-                console.warn(`Gnome Smart Home: ${error.message}`);
-                Main.notify(_('Smart Home'), _('Could not open the color picker.'));
-            }
-            return null;
-        } finally {
-            if (this._colorProcess === process)
-                this._colorProcess = null;
-        }
-    }
-
     openHomeAssistant() {
         const url = this._settings.get_string('server-url');
         if (url) {
@@ -300,8 +286,6 @@ export default class GnomeSmartHome extends Extension {
     disable() {
         this._active = false;
         this._generation++;
-        this._colorProcess?.force_exit();
-        this._colorProcess = null;
         this._credentialCancel?.cancel();
         this._credentialCancel = null;
         this._client?.stop();

@@ -39,33 +39,69 @@
 }
 
 .gsh-kelvin {
-    min-width: 5em;
     text-align: right;
     font-feature-settings: "tnum";
 }
 
-.gsh-palette-row {
+.gsh-color-toggle {
+    min-width: 5em;
+    border-radius: 6px;
+}
+
+.gsh-color-toggle:hover,
+.gsh-color-toggle:focus {
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.gsh-temperature-value {
     spacing: 4px;
 }
 
-.gsh-color-swatch {
-    padding: 3px;
-    border-radius: 99px;
-    border: 2px solid transparent;
+.gsh-temperature-value .gsh-color-arrow {
+    icon-size: 12px;
 }
 
-.gsh-color-swatch:checked,
-.gsh-color-swatch:focus {
+.gsh-device-list .gsh-color-row {
+    padding: 4px 8px 10px;
+}
+
+.gsh-light-color-picker {
+    spacing: 4px;
+}
+
+.gsh-color-wheel {
+    width: 192px;
+    height: 192px;
+}
+
+.gsh-hex-form {
+    spacing: 6px;
+}
+
+.gsh-hex-entry {
+    width: 6.5em;
+    padding: 4px 6px;
+    font-feature-settings: "tnum";
+    background-color: rgba(127, 127, 127, 0.18);
+    border: 1px solid rgba(127, 127, 127, 0.32);
+    border-radius: 8px;
+}
+
+.gsh-hex-entry:focus {
     border-color: -st-accent-color;
 }
 
-.gsh-color-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 99px;
+.gsh-hex-entry:error {
+    border-color: #e01b24;
 }
 
-.gsh-color-picker-button {
-    padding: 4px;
-    border-radius: 99px;
+.gsh-hex-apply {
+    padding: 4px 8px;
+    border-radius: 8px;
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.gsh-hex-apply:hover,
+.gsh-hex-apply:focus {
+    background-color: rgba(127, 127, 127, 0.36);
 }

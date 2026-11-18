@@ -7,7 +7,7 @@ Gnome Smart Home is a GJS extension for GNOME Shell 50 on Wayland. It controls s
 ## Where to make changes
 
 - `extension.js` manages the Shell tile, settings subscriptions, and connection lifecycle. `lib/controls.js` owns the device widgets and command feedback.
-- `prefs.js` and `lib/preferences.js` handle the GTK 4/libadwaita settings. `lib/color-picker*.js` runs the GTK color picker in a separate process. Keep GTK imports out of the Shell process.
+- `prefs.js` and `lib/preferences.js` handle the GTK 4/libadwaita settings. `lib/color-picker.js` draws the inline color wheel in Quick Settings. Keep GTK imports out of the Shell process.
 - `lib/client.js` handles REST discovery and the WebSocket connection. `lib/model.js` keeps entity capabilities, state updates, and service payloads independent of GNOME modules.
 - `lib/credentials.js` stores tokens in the keyring. Keep real tokens, server URLs, and device data out of source files, fixtures, commits, and shared logs. Use the local Home Assistant fixture for automated tests.
 
@@ -33,5 +33,5 @@ Gnome Smart Home is a GJS extension for GNOME Shell 50 on Wayland. It controls s
 
 - With npm and `flock` installed and the working tree clean, run `make release` for a patch release. Use `make release BUMP=minor` or `make release BUMP=major` for other bumps. The command updates `package.json` and `metadata.json`, commits them, and pushes the release commit and annotated `vMAJOR.MINOR.PATCH` tag to `origin` in one Git transaction. If the push fails, run `make release` again from the same branch to retry that release.
 - Read the [review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and the [upload terms](https://extensions.gnome.org/upload/). Running `make release` pushes the tag that authorizes [Publish to GNOME Extensions](.github/workflows/publish-gnome-extensions.yml) to accept those terms and send the ZIP for review with the `EGO_USERNAME` and `EGO_PASSWORD` repository secrets. Only a new release tag triggers this workflow.
-- The workflow runs Shexli against the same ZIP it submits. Errors stop the workflow. Review warnings before submitting. `EGO-P-007` currently flags the two color-picker files because Shell launches the GTK helper as a separate GJS process. The helper uses a fixed script path, closes on accept or cancel, and is terminated when the extension is disabled.
+- The workflow runs Shexli against the same ZIP it submits. Errors stop the workflow. Review warnings before submitting.
 - Check the GNOME Extensions account for the submitted version before retrying a timed-out upload. To submit manually, download the ZIP from the workflow's artifacts and use the [upload page](https://extensions.gnome.org/upload/).
