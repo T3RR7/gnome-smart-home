@@ -112,6 +112,16 @@ The preferences process verifies the server and lists entities via REST. The ext
 
 For contributions, keep device commands and capability checks in the model where possible. Wrap new UI strings for translation, run `make check`, and use `make test-ui` for changes to Shell widgets or GTK preferences.
 
+## Publish to GNOME Extensions
+
+In GitHub, go to **Actions → Publish to GNOME Extensions → Run workflow**. The [workflow](.github/workflows/publish-gnome-extensions.yml) runs `make check` on Fedora 44, builds the extension, and saves the installable ZIP under **Artifacts**. Leave **Submit to extensions.gnome.org for review** unchecked to build and inspect the ZIP without an account.
+
+1. Read the [GNOME Extensions review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html) and the [upload terms](https://extensions.gnome.org/upload/). Make the project URL in `metadata.json` accessible to reviewers and users when you are ready to release.
+2. In **Settings → Secrets and variables → Actions** on GitHub, create the repository secrets `EGO_USERNAME` and `EGO_PASSWORD`. Use the GNOME Extensions account that owns or will own the listing.
+3. Update `version-name` in `metadata.json` for the release. Run the workflow on `main` with **Submit to extensions.gnome.org for review** checked. This accepts the upload terms and sends the ZIP using the [official GNOME CLI](https://gjs.guide/extensions/upgrading/gnome-shell-49.html#extension-tools). Approved versions become available in the catalog.
+
+If an upload times out, check your GNOME Extensions account for the submitted version before retrying. You can also download the build-only ZIP and submit it from the [GNOME Extensions upload page](https://extensions.gnome.org/upload/).
+
 ## License
 
 The project code and documentation are licensed under the [MIT License](LICENSE). The bundled [GNOME Icon Development Kit](https://gitlab.gnome.org/Teams/Design/icon-development-kit) SVGs are [CC0 1.0](icons/gnome/COPYING.md). See the [icon credits](icons/README.md) for asset provenance.

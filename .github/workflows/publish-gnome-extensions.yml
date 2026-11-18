@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: MIT
+name: Publish to GNOME Extensions
+
+on:
+  workflow_dispatch:
+    inputs:
+      submit:
+        description: Submit to extensions.gnome.org for review (accepts the upload terms)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Serialize manual runs so two uploads cannot run at the same time.
+concurrency:
+  group: publish-gnome-extensions
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  package:
+    name: Build and optionally submit the extension
+    runs-on: ubuntu-24.04
+    container: docker.io/library/fedora:44
+    timeout-minutes: 20
+    steps:
+      - name: Require main for submissions
+        if: inputs.submit && github.ref != 'refs/heads/main'
+        run: |
+          echo '::error::Select the main branch to submit the extension for review.'
+          exit 1
+
+      - name: Install GNOME 50 build and test tools
+        run: |
+          # The build and tests do not need Cisco's optional H.264 codec.
+          dnf -y --disablerepo=fedora-cisco-openh264 --setopt=install_weak_deps=False install \
+            ca-certificates gettext git gjs glib2 gnome-shell libsoup3 make nodejs unzip zip
+
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Check the extension
+        run: make check
+
+      - name: Build and verify the installable ZIP
+        id: build
+        run: |
+          make build
+          uuid=$(node -p "require('./metadata.json').uuid")
+          archive="dist/$uuid.shell-extension.zip"
+          unzip -tq "$archive"
+          printf 'archive=%s\n' "$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Save the installable ZIP
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: ${{ steps.build.outputs.archive }}
+          archive: false
+          if-no-files-found: error
+          overwrite: true # Allow rerunning the same workflow after a failed submission.
+
+      - name: Submit to GNOME Extensions for review
+        if: inputs.submit
+        env:
+          EGO_USERNAME: ${{ secrets.EGO_USERNAME }}
+          EGO_PASSWORD: ${{ secrets.EGO_PASSWORD }}
+          EXTENSION_ARCHIVE: ${{ steps.build.outputs.archive }}
+        run: |
+          if [[ -z "$EGO_USERNAME" || -z "$EGO_PASSWORD" ]]; then
+            echo '::error::Set the EGO_USERNAME and EGO_PASSWORD Actions secrets to submit a version.'
+            exit 1
+          fi
+
+          # Pass the password through stdin and remove it from the uploader's environment.
+          printf '%s\n' "$EGO_PASSWORD" | env -u EGO_PASSWORD \
+            gnome-extensions upload --accept-tos --user "$EGO_USERNAME" --password-file=- "$EXTENSION_ARCHIVE"
+          echo 'Submitted to GNOME Extensions for review.' >> "$GITHUB_STEP_SUMMARY"
