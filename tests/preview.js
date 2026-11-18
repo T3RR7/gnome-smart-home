@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -13,13 +13,15 @@ async function preparePreferencesEnvironment() {
     // than the launcher's outer profile. This opens the real extension prefs.
     const environment = {};
     for (const key of ['XDG_DATA_HOME', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME',
-        'XDG_RUNTIME_DIR', 'GSETTINGS_BACKEND', 'GNOME_KEYRING_CONTROL', 'GTK_A11Y']) {
+        'XDG_RUNTIME_DIR', 'GSETTINGS_BACKEND', 'GNOME_KEYRING_CONTROL', 'GTK_A11Y',
+        'GSK_RENDERER', 'GIO_USE_VFS', 'GTK_IM_MODULE']) {
         const value = GLib.getenv(key);
         if (value !== null)
             environment[key] = value;
     }
     environment.WAYLAND_DISPLAY = 'gnome-shell-test-display';
     environment.GDK_BACKEND = 'wayland';
+    environment.DISPLAY = '';
     await new Promise((resolve, reject) => {
         Gio.DBus.session.call('org.freedesktop.DBus', '/org/freedesktop/DBus',
             'org.freedesktop.DBus', 'UpdateActivationEnvironment',

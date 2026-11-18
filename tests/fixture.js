@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
 // An in-process mock: tests never discover or command real household devices.
 import GLib from 'gi://GLib';
 import Soup from 'gi://Soup?version=3.0';
@@ -72,47 +72,47 @@ export function startFixture({onCall = () => {}} = {}) {
                 calls.push(message);
                 onCall(message);
                 const respond = () => {
-                if (acceptServices) {
-                    const id = message.target.entity_id;
-                    const entity = states.get(id);
-                    const attributes = {};
-                    const data = message.service_data ?? {};
-                    let state = entity?.state;
-                    if (message.service === 'turn_on')
-                        state = 'on';
-                    if (message.service === 'turn_off')
-                        state = 'off';
-                    if (Number.isFinite(data.brightness_pct))
-                        attributes.brightness = Math.round(data.brightness_pct * 255 / 100);
-                    if (Number.isFinite(data.color_temp_kelvin)) {
-                        attributes.color_temp_kelvin = data.color_temp_kelvin;
-                        attributes.color_mode = 'color_temp';
+                    if (acceptServices) {
+                        const id = message.target.entity_id;
+                        const entity = states.get(id);
+                        const attributes = {};
+                        const data = message.service_data ?? {};
+                        let state = entity?.state;
+                        if (message.service === 'turn_on')
+                            state = 'on';
+                        if (message.service === 'turn_off')
+                            state = 'off';
+                        if (Number.isFinite(data.brightness_pct))
+                            attributes.brightness = Math.round(data.brightness_pct * 255 / 100);
+                        if (Number.isFinite(data.color_temp_kelvin)) {
+                            attributes.color_temp_kelvin = data.color_temp_kelvin;
+                            attributes.color_mode = 'color_temp';
+                        }
+                        if (Array.isArray(data.rgb_color)) {
+                            attributes.rgb_color = data.rgb_color;
+                            attributes.color_mode = 'rgb';
+                        }
+                        if (message.service === 'set_percentage') {
+                            attributes.percentage = data.percentage;
+                            state = data.percentage > 0 ? 'on' : 'off';
+                        }
+                        if (message.service === 'open_cover' || message.service === 'close_cover') {
+                            attributes.current_position = message.service === 'open_cover' ? 100 : 0;
+                            state = attributes.current_position ? 'open' : 'closed';
+                        }
+                        if (message.service === 'set_cover_position') {
+                            attributes.current_position = data.position;
+                            state = data.position ? 'open' : 'closed';
+                        }
+                        if (message.service === 'set_temperature')
+                            attributes.temperature = data.temperature;
+                        if (message.domain === 'scene')
+                            state = new Date().toISOString();
+                        if (entity)
+                            change(id, state, attributes);
                     }
-                    if (Array.isArray(data.rgb_color)) {
-                        attributes.rgb_color = data.rgb_color;
-                        attributes.color_mode = 'rgb';
-                    }
-                    if (message.service === 'set_percentage') {
-                        attributes.percentage = data.percentage;
-                        state = data.percentage > 0 ? 'on' : 'off';
-                    }
-                    if (message.service === 'open_cover' || message.service === 'close_cover') {
-                        attributes.current_position = message.service === 'open_cover' ? 100 : 0;
-                        state = attributes.current_position ? 'open' : 'closed';
-                    }
-                    if (message.service === 'set_cover_position') {
-                        attributes.current_position = data.position;
-                        state = data.position ? 'open' : 'closed';
-                    }
-                    if (message.service === 'set_temperature')
-                        attributes.temperature = data.temperature;
-                    if (message.domain === 'scene')
-                        state = new Date().toISOString();
-                    if (entity)
-                        change(id, state, attributes);
-                }
-                send(socket, {id: message.id, type: 'result', success: acceptServices,
-                    ...(acceptServices ? {result: {context: {id: 'test'}}} : {error: {code: 'service_not_found', message: 'Test rejection'}})});
+                    send(socket, {id: message.id, type: 'result', success: acceptServices,
+                        ...(acceptServices ? {result: {context: {id: 'test'}}} : {error: {code: 'service_not_found', message: 'Test rejection'}})});
                 };
                 if (serviceDelayMs) {
                     const timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, serviceDelayMs, () => {

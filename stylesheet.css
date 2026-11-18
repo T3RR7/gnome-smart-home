@@ -1,4 +1,5 @@
-/* Use GNOME's theme for all surfaces, colors, switches, and sliders. */
+/* SPDX-License-Identifier: MIT */
+/* Inherit GNOME's theme for the menu surface and controls. */
 .gsh-device-list {
     max-height: 320px;
 }

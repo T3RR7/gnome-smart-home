@@ -1,131 +1,85 @@
 # Gnome Smart Home
 
-Управление Home Assistant из меню быстрых настроек GNOME, которое открывается в правом верхнем углу экрана.
+Control your Home Assistant devices from the **Smart Home** tile in GNOME Quick Settings. Choose which entities appear, give them custom names or symbolic icons, and arrange them in the order you want. The extension uses GNOME Shell widgets and a GTK 4/libadwaita preferences window. The interface is available in English and Russian.
 
-Расширение добавляет плитку **«Умный дом»**. Нажатие на плитку или стрелку открывает список выбранных устройств. Интерфейс использует настоящие компоненты GNOME Shell, а настройки — GTK4/libadwaita. Цвета, шрифты, переключатели и ползунки наследуются от системной темы. Есть русский и английский интерфейс; язык выбирается по языку сеанса.
+## Compatibility
 
-## Возможности
+The extension supports **GNOME Shell 50 on Wayland** and was tested on GNOME Shell 50.6. Home Assistant must be reachable from your desktop and expose the entities you want to control.
 
-- Список избранных устройств с поиском по названию и идентификатору сущности.
-- Свои названия и порядок устройств; изменения применяются сразу. Положение плитки «Умный дом» в быстрых настройках тоже настраивается.
-- Выбор символических иконок GNOME/Adwaita и официального GNOME Icon Development Kit для устройств и плитки. Лампы обозначены лампочкой, выключатели — переключателем, розетки — вилкой, датчики — микросхемой. Можно указать другое символическое имя из установленной темы или импортировать свой одноцветный SVG.
-- Свет, розетки, выключатели и помощники `input_boolean`: включение и выключение.
-- Свет с поддержкой диммирования: яркость. Для совместимых ламп доступны температура белого света в кельвинах, девять быстрых цветов и стандартное окно GTK для произвольного цвета. Кнопка с пипеткой справа от палитры открывает полный редактор цвета; отмена не отправляет команды. Home Assistant преобразует RGB в поддерживаемый лампой формат.
-- Вентиляторы: включение, выключение и скорость, если поддерживается.
-- Шторы и жалюзи: открыть, остановить, закрыть и задать положение в пределах возможностей устройства.
-- Термостаты: текущая температура и изменение целевой температуры с учётом шага и границ устройства.
-- Сцены и сценарии: запуск. Кнопки `button` и `input_button`: нажатие.
-- Датчики и двоичные датчики: показания.
-- Обновления состояний через WebSocket и автоматическое переподключение с задержкой от 1 до 60 секунд.
-- Токен хранится в GNOME Keyring через libsecret. В GSettings записываются только адрес сервера, избранное и параметры интерфейса.
-- Дополнительный значок дома в верхней панели и ползунки можно включать и выключать в настройках.
+- **Runtime:** GJS, GTK 4, libadwaita, libsoup 3, libsecret and their GObject Introspection bindings, plus a Secret Service provider such as GNOME Keyring.
+- **Build:** GNU Make, Bash, `gnome-extensions`, `glib-compile-schemas`, and gettext's `msgfmt`.
+- **Development and tests:** Node.js for unit tests. The UI tests use `gnome-shell-test-tool` from GNOME 50, `dbus-run-session`, `gnome-keyring-daemon`, and `timeout`. The interactive preview also needs Mutter Devkit.
 
-**Поддерживаемая версия: GNOME Shell 50.** Проверено на GNOME Shell 50.6, GJS 1.88.1 и libadwaita 1.9.4. Совместимость с другими версиями GNOME пока не заявлена.
+## Install
 
-## Установка
+From a checkout of this repository, run:
 
-Необходимы `gnome-shell`, `gjs`, `glib-compile-schemas`, `gnome-extensions`, `msgfmt`, libsoup 3, libsecret, GTK4 и libadwaita с GObject Introspection. Node.js нужен только для тестов. Загрузка npm-пакетов для сборки не требуется.
-
-Из каталога проекта:
-
-```bash
-bash scripts/install.sh
+```sh
+make install
 ```
 
-Скрипт собирает архив, устанавливает его в пользовательский каталог расширений и включает его. При первой установке может потребоваться выйти из сеанса и войти снова: расширение уже будет добавлено в список включённых для следующего входа. Открыть настройки:
+This builds the ZIP and installs it for the current user. On a first install, or after an update to JavaScript already loaded by GNOME Shell, log out of GNOME and back in to load the extension. Open its preferences with `make prefs` or from the **Smart Home → Settings** menu.
 
-```bash
-gnome-extensions prefs gnome-smart-home@local
-```
+To build an installable ZIP for another machine, run `make build`. The archive is written to `dist/gnome-smart-home@local.shell-extension.zip`. You can install it with `gnome-extensions install <path-to-zip>` and enable `gnome-smart-home@local` in the Extensions app once GNOME has loaded it.
 
-Готовый архив: `dist/gnome-smart-home@local.shell-extension.zip`. Его также можно установить отдельно:
+## Connect to Home Assistant
 
-```bash
-gnome-extensions install --force dist/gnome-smart-home@local.shell-extension.zip
-```
+1. Open your Home Assistant profile and create a **Long-lived access token** under **Security**.
+2. Open the extension's **Connection** tab. Enter the base URL of your server, such as `http://homeassistant.local:8123` or `https://ha.example.org`. Use the final URL when connecting through a reverse proxy.
+3. Paste the token and select **Save and connect**. The extension checks the connection before saving it.
+4. Open **Devices** and select the entities to display. Use the arrows to reorder them. Expand a favorite to rename it or choose a different icon.
 
-Перезапуск или завершение текущего сеанса скрипты не выполняют. При обновлении уже загруженного расширения изменения JavaScript вступают в силу после нового входа в GNOME.
+The **Panel** settings let you change the tile position and icon, enable the optional top-bar icon, and show or hide sliders and color controls. Position `0` uses GNOME's default placement. Position `1` puts the tile first.
 
-## Подключение
+Tokens are stored in your keyring. The extension uses GSettings for the server URL, favorites, and appearance preferences. **Forget connection** clears the current server's credentials and favorites. Switching server URLs clears favorites so device identifiers from one server do not carry over to another. For HTTPS, the system must trust the server's certificate.
 
-1. В Home Assistant откройте **Профиль → Безопасность → Долгосрочные токены доступа** и создайте токен.
-2. Откройте настройки расширения, страницу **«Подключение»**.
-3. Укажите базовый адрес Home Assistant, например `http://homeassistant.local:8123` или `https://ha.example.org`. Поддерживается и путь обратного прокси, например `https://example.org/ha`.
-4. Вставьте токен и нажмите **«Сохранить и подключиться»**. Подключение проверяется перед сохранением. При последующих подключениях поле токена можно оставить пустым для использования сохранённого токена этого сервера.
-5. На странице **«Устройства»** отметьте нужные сущности. Раскройте строку избранного устройства для изменения названия и иконки; новое название сохраняется кнопкой применения справа в поле. Стрелки меняют порядок, кнопка минуса убирает устройство из меню.
+## Supported controls
 
-В разделе **«Панель»** на странице подключения можно выбрать иконку общей плитки, её положение и видимость цветовых контролов. Положение `0` использует стандартное место; `1` ставит плитку первой. Встроенная галерея использует оригинальные иконки Adwaita из установленной системы и готовые SVG из [GNOME Icon Development Kit](https://gitlab.gnome.org/Teams/Design/icon-development-kit). Их векторное содержимое сохранено без изменений; источники, версия, контрольные суммы и лицензия CC0 записаны в `icons/manifest.json` и `icons/gnome/COPYING.md`. Импорт пользовательских иконок принимает небольшие одноцветные SVG без изображений, активного содержимого, внешних ссылок и градиентов и сохраняет копию в пользовательском каталоге данных.
+Available controls depend on the capabilities and permissions exposed by Home Assistant.
 
-Во время команды тумблер сохраняет выбранное положение, а строка остаётся на месте. Изменения состояния из Home Assistant подтверждают выбор; ошибка действия возвращает последнее подтверждённое состояние. Если человек меняет настройку повторно во время запроса, последнее значение отправляется следующим. Если после успешного вызова новое состояние так и не пришло, через пять секунд интерфейс возвращается к состоянию сервера.
-
-Устройство должно быть заранее добавлено в Home Assistant через соответствующую интеграцию. Доступные действия зависят от этой интеграции и прав пользователя Home Assistant. Физическое устройство может иметь несколько сущностей: в списке выбираются именно сущности, например `light.desk` и `sensor.room_temperature`.
-
-При смене сервера избранное сбрасывается, чтобы не отправлять команды одноимённым сущностям другого дома. **«Забыть подключение»** удаляет токен текущего сервера, адрес и список избранного. Токены ранее использованных серверов остаются отдельными записями в связке ключей; ими можно управлять через приложение «Пароли и ключи».
-
-## Границы текущей версии
-
-Нет выбора режимов HVAC, диапазонной температуры термостата, управления медиаплеерами, пылесосами и замками. Термостат с диапазоном `target_temp_low`/`target_temp_high` показывает состояние; изменение диапазона не реализовано. Действия не поддерживаемых типов следует выполнять в Home Assistant.
-
-Используется стандартная проверка TLS. Самоподписанный сертификат должен быть доверенным в системе; отключения проверки сертификатов нет. HTTP и WebSocket не следуют перенаправлениям: нужно указать конечный базовый адрес сервера. Ни облачный сервис расширения, ни внешний сервер-посредник не используются; соединение идёт с указанным сервером Home Assistant.
-
-## Проверки
-
-### Ручная проверка UI в Devkit
-
-```bash
-cd /home/t3rr7/Sources/personal/shome/gnome-smart-home
-npm run dev
-```
-
-Нужен пакет `mutter-devkit` той же версии, что и установленный Mutter. Команда собирает текущие исходники, запускает отдельный GNOME Shell в окне Devkit и открывает меню Smart Home с семью демо-сущностями: лампой, розеткой, вентилятором, шторами, термостатом, датчиком температуры и сценой. Можно нажимать переключатели и двигать ползунки: локальный тестовый сервер применяет команды и возвращает новые состояния.
-
-Внутри окна Devkit откройте **Smart Home → Settings** для проверки настоящего окна настроек расширения. Там можно добавлять и убирать устройства, менять их порядок и названия. Изменения сразу видны в тестовой панели.
-
-Тестовый запуск использует отдельную D-Bus-сессию, временный профиль GSettings и временную связку ключей с демонстрационным токеном. Настройки установленной рабочей копии расширения не меняются. Демо подключено только к локальному тестовому серверу; вводить настоящий токен для проверки UI не требуется.
-
-Цикл совместной работы: запустить демо → проверить интерфейс и описать замечания → изменить исходники → остановить запуск сочетанием **Ctrl+C** в его терминале → снова выполнить `npm run dev`. Каждый запуск читает свежий код. Выходить из основного сеанса GNOME и переустанавливать рабочее расширение для этого не нужно. Демо-настройки при новом запуске сбрасываются к исходному набору.
-
-Логи GNOME и команды к демо-устройствам записываются в `tests/artifacts/devkit.log`; отправленные команды имеют префикс `[UI preview]`. Для проверки ошибок полезно искать `JS ERROR`, `Script failed` и `CRITICAL`.
-
-Проверить запуск демо и синхронизацию настроек автоматически, без окна:
-
-```bash
-GSH_PREVIEW_SMOKE=1 bash scripts/dev.sh --headless
-```
-
-### Автоматические проверки
-
-```bash
-npm run check
-bash tests/run-ui.sh
-```
-
-`npm run check` проверяет синтаксис JavaScript, схему GSettings, перевод, модель состояний и сетевой клиент GJS/libsoup. Сетевые тесты поднимают локальный тестовый сервер Home Assistant и проверяют авторизацию, discovery, подписки, команды, ошибки, push-обновления, переподключение и очистку после отключения.
-
-`tests/run-ui.sh` требует `gnome-shell-test-tool`, `dbus-run-session` и `gnome-keyring-daemon`. Он создаёт отдельную D-Bus-сессию и временную связку ключей, запускает отдельный GNOME Shell с виртуальным экраном и программно проверяет настоящие настройки GTK, добавление плитки, команды из переключателя, обновления состояний, параметры интерфейса, отключение и повторное включение. Рабочий стол пользователя и настоящие устройства в тестах не участвуют.
-
-Для обычной сборки:
-
-```bash
-npm run build
-```
-
-## Структура
-
-| Файл | Назначение |
+| Entity | Controls |
 | --- | --- |
-| `extension.js` | Плитка быстрых настроек и жизненный цикл расширения |
-| `prefs.js`, `lib/preferences.js` | Настройки GTK4/libadwaita |
-| `lib/controls.js` | Нативные элементы управления устройствами |
-| `lib/client.js` | Асинхронный клиент libsoup: REST discovery и WebSocket |
-| `lib/model.js` | Модель сущностей и формирование команд |
-| `lib/credentials.js` | Хранение токена через libsecret |
-| `lib/icons.js` | Штатные символические иконки GNOME и импорт пользовательского SVG |
-| `lib/color-picker.js`, `lib/color-picker-main.js` | Полный нативный редактор цвета в отдельном GTK-процессе |
-| `icons/` | Оригинальные тематические SVG из GNOME Icon Development Kit, источники и лицензия |
-| `schemas/` | Настройки GSettings без секретов |
-| `po/ru.po` | Русский перевод |
+| Lights | On/off, brightness, white temperature, color presets, and a full color picker |
+| Switches and input booleans | On/off |
+| Fans | On/off and speed |
+| Covers | Open, close, stop, and position |
+| Thermostats | Current and target temperature with adjustment for a single setpoint |
+| Scenes, scripts, and buttons | Activate, run, or press |
+| Sensors and binary sensors | Read their current state |
 
-Используются официальные API: [GNOME Quick Settings](https://gjs.guide/extensions/topics/quick-settings.html), [настройки расширений](https://gjs.guide/extensions/development/preferences.html), [Home Assistant WebSocket API](https://contributors.home-assistant.io/core/internals/websocket-api/), [REST API](https://contributors.home-assistant.io/core/internals/rest-api/) и [libsecret](https://gnome.pages.gitlab.gnome.org/libsecret/libsecret-js-examples.html).
+The eyedropper beside the color presets opens the color editor for lamps that support color. A color or brightness selection can turn a light on. Thermostats that use a temperature range display their state. Adjust their range or HVAC mode in Home Assistant.
 
-Лицензия: GPL-3.0-or-later.
+## Develop and test
+
+Run `make` to list the available commands.
+
+| Command | Purpose |
+| --- | --- |
+| `make dev` | Open an isolated GNOME Devkit window with seven demo entities |
+| `make check` | Validate JavaScript, GSettings schemas, and translations, then run unit and API tests |
+| `make test` | Run the model tests and the GJS client against a local Home Assistant fixture |
+| `make test-ui` | Exercise Quick Settings, device controls, the color picker, and preferences in a headless GNOME session |
+| `make test-preview` | Verify demo startup and preference synchronization in a headless GNOME session |
+| `make clean` | Remove the generated ZIP, schema, and translation catalog |
+
+The Devkit uses a temporary profile, keyring, and local server. Demo commands are logged to `tests/artifacts/devkit.log`. Use **Ctrl+C** in the launch terminal to stop it. Restart the preview to load code changes.
+
+### Code layout
+
+| Path | Responsibility |
+| --- | --- |
+| `extension.js` and `lib/controls.js` | Quick Settings integration, device widgets, and command feedback |
+| `prefs.js` and `lib/preferences.js` | Server setup, entity discovery, and preferences |
+| `lib/client.js` and `lib/model.js` | Home Assistant REST discovery, WebSocket subscriptions, state updates, and service payloads |
+| `lib/credentials.js` | Server-scoped token storage via libsecret |
+| `lib/color-picker*.js` | Native color chooser in a separate GTK process |
+| `lib/icons.js` and `icons/` | Symbolic icon selection, import, and upstream assets |
+| `schemas/`, `po/`, and `tests/` | GSettings schema, translations, and tests |
+
+The preferences process verifies the server and lists entities via REST. The extension process subscribes to selected entities over WebSocket and sends Home Assistant service calls. A control shows the requested value immediately and reconciles it with the next server update. Opening the color chooser launches a GTK process that returns the selected RGB values to the extension.
+
+For contributions, keep device commands and capability checks in the model where possible. Wrap new UI strings for translation, run `make check`, and use `make test-ui` for changes to Shell widgets or GTK preferences.
+
+## License
+
+The project code and documentation are licensed under the [MIT License](LICENSE). The bundled [GNOME Icon Development Kit](https://gitlab.gnome.org/Teams/Design/icon-development-kit) SVGs are [CC0 1.0](icons/gnome/COPYING.md). See the [icon credits](icons/README.md) for asset provenance.

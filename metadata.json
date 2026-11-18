@@ -2,6 +2,7 @@
   "uuid": "gnome-smart-home@local",
   "name": "Gnome Smart Home",
   "description": "Control your Home Assistant devices from GNOME Quick Settings.",
+  "url": "https://github.com/T3RR7/gnome-smart-home",
   "shell-version": ["50"],
   "version": 3,
   "version-name": "0.3.0",

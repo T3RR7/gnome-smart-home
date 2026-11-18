@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 if [[ ${1:-} != --isolated ]]; then
@@ -25,4 +26,11 @@ bash scripts/build.sh
 unset DISPLAY
 export LIBGL_ALWAYS_SOFTWARE=1
 export GTK_A11Y=none
-timeout 90s gnome-shell-test-tool --headless --disable-animations --extra-filter=org.gnome.SmartHome.Test --extra-filter=org.gnome.SmartHome.ColorPicker --extension dist/gnome-smart-home@local.shell-extension.zip "$PWD/tests/shell.js"
+# Keep GTK in the isolated Wayland session without probing Xwayland or GVfs.
+export GSK_RENDERER=cairo
+export GIO_USE_VFS=local
+export GTK_IM_MODULE=simple
+export PATH="$PWD/tests:$PATH"
+timeout 90s gnome-shell-test-tool --wrap wayland-shell --headless --disable-animations \
+    --extra-filter=org.gnome.SmartHome.Test --extra-filter=org.gnome.SmartHome.ColorPicker \
+    --extension dist/gnome-smart-home@local.shell-extension.zip "$PWD/tests/shell.js"

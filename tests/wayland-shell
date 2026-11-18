@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# The Shell test tool passes the compositor command and its arguments here.
+exec "$@" --no-x11

@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 bash scripts/build.sh
-gnome-extensions install --force dist/gnome-smart-home@local.shell-extension.zip
+# GNOME moves the unpacked bundle from its cache to the extensions directory.
+# Place the temporary cache on the data filesystem so that move can succeed.
+data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell"
+mkdir -p -- "$data_dir"
+install_cache=$(mktemp -d "$data_dir/.gsh-install.XXXXXX")
+trap 'rmdir -- "$install_cache" 2>/dev/null || true' EXIT
+XDG_CACHE_HOME="$install_cache" GIO_USE_VFS=local \
+    gnome-extensions install --force dist/gnome-smart-home@local.shell-extension.zip
 if gnome-extensions info gnome-smart-home@local >/dev/null 2>&1; then
     gnome-extensions enable gnome-smart-home@local
     printf 'Enabled Gnome Smart Home. Open the top-right Quick Settings menu.\n'

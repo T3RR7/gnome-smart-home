@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 
@@ -58,10 +58,12 @@ class GshHomeToggle extends QuickSettings.QuickMenuToggle {
 });
 
 export default class GnomeSmartHome extends Extension {
+    // Keep this monotonic across enable/disable cycles to reject stale lookups.
+    _generation = 0;
+
     enable() {
         this._settings = this.getSettings();
         this._active = true;
-        this._generation = 0;
         this._states = new Map();
         this._status = 'unconfigured';
         this._controls = [];
@@ -227,6 +229,7 @@ export default class GnomeSmartHome extends Extension {
         Main.panel.closeQuickSettings();
         let process;
         try {
+            // Use the Shell display so the GTK helper opens inside Devkit too.
             const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
             launcher.set_environ(global.create_app_launch_context(0, -1).get_environment());
             launcher.setenv('GDK_BACKEND', 'wayland', true);
@@ -239,7 +242,9 @@ export default class GnomeSmartHome extends Extension {
                         if (!source.get_successful())
                             throw new Error(`color-picker-failed: ${errors.trim().slice(0, 400)}`);
                         resolve(output);
-                    } catch (error) { reject(error); }
+                    } catch (error) {
+                        reject(error);
+                    }
                 });
             });
             if (!this._active || !stdout.trim())

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
@@ -27,6 +28,7 @@ export async function run() {
     launcher.setenv('GSETTINGS_BACKEND', 'memory', true);
     launcher.setenv('GDK_BACKEND', 'wayland', true);
     launcher.setenv('WAYLAND_DISPLAY', 'gnome-shell-test-display', true);
+    launcher.unsetenv('DISPLAY');
     const prefsTestPath = Gio.File.new_for_uri(import.meta.url).get_parent().get_child('prefs-smoke.js').get_path();
     const prefsTest = launcher.spawnv(['gjs', '-m', prefsTestPath]);
     await new Promise((resolve, reject) => {
