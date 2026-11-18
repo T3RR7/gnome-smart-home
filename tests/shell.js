@@ -2,6 +2,7 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
+import GdkPixbuf from 'gi://GdkPixbuf';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
@@ -20,6 +21,36 @@ function pause(milliseconds) {
         resolve();
         return GLib.SOURCE_REMOVE;
     }));
+}
+
+// A light bulb is a single foreground shape. Shell used to paint its fill and
+// stroke on opposite sides of the menu background's brightness.
+async function checkLampIcon(icon) {
+    const [x, y] = icon.get_transformed_position();
+    const [width, height] = icon.get_transformed_size();
+    const output = Gio.MemoryOutputStream.new_resizable();
+    const shooter = new Shell.Screenshot();
+    await new Promise((resolve, reject) => shooter.screenshot_area(
+        Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(height), output,
+        (source, result) => {
+            try { source.screenshot_area_finish(result); resolve(); } catch (error) { reject(error); }
+        }));
+    output.close(null);
+    const input = Gio.MemoryInputStream.new_from_bytes(output.steal_as_bytes());
+    const picture = GdkPixbuf.Pixbuf.new_from_stream(input, null);
+    const pixels = picture.get_pixels();
+    const background = pixels[0];
+    let lightest = background;
+    let darkest = background;
+    for (let row = 0; row < picture.height; row++) {
+        for (let column = 0; column < picture.width; column++) {
+            const red = pixels[row * picture.rowstride + column * picture.n_channels];
+            lightest = Math.max(lightest, red);
+            darkest = Math.min(darkest, red);
+        }
+    }
+    assert(Math.max(lightest - background, background - darkest) > 32, 'lamp icon is visible');
+    assert(lightest <= background + 4 || darkest >= background - 4, 'lamp icon renders without a contrasting stroke');
 }
 
 export async function run() {
@@ -77,6 +108,7 @@ export async function run() {
         instance._toggle.menu.open();
         await Scripting.waitLeisure();
         assert(instance._toggle.menu.isOpen, 'device menu opens');
+        await checkLampIcon(lamp._deviceIcon);
         const [, rowY] = lamp._temperatureRow.get_transformed_position();
         const [, rowHeight] = lamp._temperatureRow.get_transformed_size();
         for (const child of [lamp._temperatureSlider, lamp._kelvin]) {

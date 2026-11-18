@@ -11,7 +11,7 @@ import {HomeAssistantClient} from './lib/client.js';
 import {lookupToken} from './lib/credentials.js';
 import {DeviceControl, ScrollableSection} from './lib/controls.js';
 import {isOn, parseDevices} from './lib/model.js';
-import {resolveIcon} from './lib/icons.js';
+import {resolveShellIcon} from './lib/icons.js';
 
 const HomeToggle = GObject.registerClass(
 class GshHomeToggle extends QuickSettings.QuickMenuToggle {
@@ -116,7 +116,7 @@ export default class GnomeSmartHome extends Extension {
     }
 
     _syncTileIcon() {
-        const icon = resolveIcon(this._settings.get_string('tile-icon') || 'go-home-symbolic', 'home');
+        const icon = resolveShellIcon(this._settings.get_string('tile-icon') || 'go-home-symbolic', 'home');
         this._toggle.gicon = icon;
         this._panelIcon.gicon = icon;
         this._toggle.menu.setHeader(icon, _('Smart Home'), 'Home Assistant');

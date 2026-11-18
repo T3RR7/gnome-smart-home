@@ -3,7 +3,7 @@
   "repository": "https://gitlab.gnome.org/Teams/Design/icon-development-kit",
   "revision": "869c02a0f00fa089e11117b3f362f8cf9fadd093",
   "license": "CC0-1.0",
-  "modifications": "SVG file contents are unmodified. Filenames have a -symbolic suffix for the standard GNOME symbolic loader.",
+  "modifications": "SVG file contents are unmodified. Filenames have a -symbolic suffix. GNOME Shell uses a generated alpha mask of the original SVG.",
   "icons": [
     {
       "file": "icons/gnome/lightbulb-modern-symbolic.svg",
